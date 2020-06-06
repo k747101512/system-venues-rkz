@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cm.venuebooking.dao.groundbooking.IGroundBookingDao">
+
+    <resultMap id="groundConfigDTO" type="com.cm.venuebooking.pojo.dtos.groundconfig.GroundConfigDTO">
+        <id column="ground_config_id" property="groundConfigId"/>
+        <result column="ground_info_id" property="groundInfoId"/>
+        <result column="venues_project_id" property="venuesProjectId"/>
+        <result column="week" property="week"/>
+        <result column="order_index" property="orderIndex"/>
+        <result column="time_am_str" property="timeAMStr"/>
+        <result column="time_am_end" property="timeAMEnd"/>
+        <result column="time_pm_str" property="timePMStr"/>
+        <result column="time_pm_end" property="timePMEnd"/>
+        <result column="length_time" property="lengthTime"/>
+        <result column="rest_time" property="restTime"/>
+        <result column="single_price" property="singlePrice"/>
+    </resultMap>
+
+    <resultMap id="groundBookingInfoListDTO" type="com.cm.venuebooking.pojo.dtos.groundbooking.GroundBookingInfoListDTO">
+        <id column="ground_info_id" property="groundInfoId"/>
+        <result column="time_str" property="timeStr"/>
+        <result column="time_end" property="timeEnd"/>
+        <result column="single_price" property="singlePrice"/>
+        <result column="user_name" property="userName"/>
+        <result column="phone_number" property="phoneNumber"/>
+        <result column="booking_order_date" property="bookingOrderDate"/>
+        <result column="ground_name" property="groundName"/>
+        <result column="dictionary_name" property="projectCategory"/>
+        <result column="venue_name" property="venueName"/>
+    </resultMap>
+
+    <!--查询对应星期的场地配置-->
+    <select id="getGroundConfig" parameterType="map" resultMap="groundConfigDTO">
+        SELECT
+            t1.ground_config_id,
+            t1.ground_info_id,
+            t1.week,
+            t1.order_index,
+            t1.time_am_str,
+            t1.time_am_end,
+            t1.time_pm_str,
+            t1.time_pm_end,
+            t1.length_time,
+            t1.rest_time,
+            t1.single_price
+        FROM
+            gen_ground_config t1
+        WHERE
+            t1.is_delete = 0
+        AND t1.ground_info_id = #{groundInfoId}
+        <if test="week != null and week != ''">
+            AND t1.week = #{week}
+        </if>
+        ORDER BY
+            t1.order_index ASC
+    </select>
+
+    <!-- 保存预订信息-->
+    <insert id="saveBookingInfo" parameterType="map">
+        insert into gen_booking_info
+            (ground_booking_id,ground_info_id,user_name,id_card_number,phone_number,booking_order_date,time_str,time_end,single_price,
+             creator,gmt_create,modifier,gmt_modified,is_delete)
+        values
+            (#{groundBookingId},#{groundInfoId},#{userName},#{idCardNumber},#{phoneNumber},#{bookingOrderDate},#{timeStr},#{timeEnd},#{singlePrice},
+             #{creator},#{gmtCreate},#{modifier},#{gmtModified},#{isDelete})
+    </insert>
+
+    <select id="listVenues" parameterType="map" resultType="map">
+        select venues_info_id,venue_name from gen_venues_info where is_delete = 0
+    </select>
+
+    <select id="listProjectByVenue" parameterType="map" resultType="map">
+        SELECT
+            t1.venues_project_id,
+            t1.venue_id,
+            t2.dictionary_name project_name
+        FROM
+            gen_venues_project t1
+                LEFT JOIN data_dictionary t2 ON t1.project_category = t2.dictionary_id
+        WHERE
+            t1.venue_id = #{venues_info_id}
+        AND t1.is_delete = 0;
+    </select>
+
+    <select id="listGroundByProject" parameterType="map" resultType="map">
+        select
+            ground_info_id,venues_project_id,ground_name
+        from
+            gen_ground_info
+        where
+            is_delete = 0
+        and venues_project_id = #{venues_project_id}
+    </select>
+
+    <select id="listMyBookingOrder" parameterType="map" resultMap="groundBookingInfoListDTO">
+        SELECT
+            t1.ground_info_id,
+            t1.ground_booking_id,
+            t1.time_str,
+            t1.time_end,
+            t1.single_price,
+            t1.booking_order_date,
+            t2.ground_name,
+            t4.dictionary_name,
+            t5.venue_name
+        FROM
+            gen_booking_info t1
+        LEFT JOIN gen_ground_info t2 ON t1.ground_info_id = t2.ground_info_id
+        LEFT JOIN gen_venues_project t3 ON t2.venues_project_id = t3.venues_project_id
+        LEFT JOIN data_dictionary t4 ON t3.project_category = t4.dictionary_id
+        LEFT JOIN gen_venues_info t5 ON t3.venue_id = t5.venues_info_id
+        WHERE
+            t1.is_delete = 0
+        AND t1.phone_number = #{phoneNumber}
+    </select>
+
+    <select id="listPageBookingOrder" parameterType="map" resultMap="groundBookingInfoListDTO">
+        SELECT
+            t1.ground_info_id,
+            t1.ground_booking_id,
+            t1.time_str,
+            t1.time_end,
+            t1.user_name,
+            t1.phone_number,
+            t1.single_price,
+            t1.booking_order_date,
+            t2.ground_name,
+            t4.dictionary_name,
+            t5.venue_name
+        FROM
+            gen_booking_info t1
+        LEFT JOIN gen_ground_info t2 ON t1.ground_info_id = t2.ground_info_id
+        LEFT JOIN gen_venues_project t3 ON t2.venues_project_id = t3.venues_project_id
+        LEFT JOIN data_dictionary t4 ON t3.project_category = t4.dictionary_id
+        LEFT JOIN gen_venues_info t5 ON t3.venue_id = t5.venues_info_id
+        WHERE
+          t1.is_delete = 0
+    </select>
+</mapper>
