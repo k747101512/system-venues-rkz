@@ -1,35 +1,56 @@
 package com.cm.venuebooking.service.groundbooking;
 
 import com.alibaba.fastjson.JSONObject;
-import com.cm.common.exception.SaveException;
-import com.cm.common.exception.SearchException;
 import com.cm.common.pojo.ListPage;
 import com.cm.common.result.SuccessResult;
 import com.cm.common.result.SuccessResultData;
 import com.cm.common.result.SuccessResultList;
-import com.cm.venuebooking.pojo.dtos.groundbooking.GroundBookingInfoListDTO;
+import com.cm.venuebooking.pojo.dtos.bookingorder.GroundBookingInfoDTO;
+import com.cm.venuebooking.pojo.dtos.bookingorder.MyTicketListDTO;
+import com.cm.venuebooking.pojo.dtos.groundinfo.GroundInfoDTO;
+import com.cm.venuebooking.pojo.vos.groundbooking.GroundTicketVO;
 
 import java.util.List;
 import java.util.Map;
 
 /**
+ * 场馆订单接口
  * @author xwangs
- * @create 2020-05-01 18:25
+ * @create 2020-06-04 21:49
  * @description
  */
 public interface IGroundBookingService {
 
-    Object listGroundBooking(Map<String, Object> reqParams) throws SearchException;
+    /**
+     * 订单分页列表接口
+     * @param page
+     * @return
+     */
+    SuccessResultList listPageBookingOrder(ListPage page);
 
-    SuccessResult saveBookingInfo(Map<String, Object> params) throws SaveException;
+    /**
+     *
+     * @param token
+     * @param groundTicketVO
+     * @return
+     * @throws Exception
+     */
+    SuccessResult saveBookingInfoForApp(String token, GroundTicketVO groundTicketVO) throws Exception;
 
-    Object getTreeGroundInfo(Map<String, Object> param) throws SearchException;
+    /**
+     * 查询我的订单列表
+     * @param token
+     * @param page
+     * @return
+     */
+    SuccessResultList<List<MyTicketListDTO>> listPageMyTicket(String token, ListPage page);
 
-    SuccessResultData listBookingByDate(Map<String, Object> params) throws SearchException;
 
-    void saveBookingItems(String token,JSONObject jsonObject) throws Exception;
-
-    SuccessResultData listMyBookingOrder(String token) throws SearchException;
-
-    SuccessResultList<List<GroundBookingInfoListDTO>> listPageBookingOrder(ListPage page) throws SearchException;
+    /**
+     * 查询我的订单详情
+     * @param token
+     * @param params
+     * @return
+     */
+    SuccessResultData<List<GroundBookingInfoDTO>> getMyTicketDetail(String token, Map<String, Object> params);
 }

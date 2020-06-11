@@ -28,7 +28,7 @@
                             <label class="layui-form-label">选择城市</label>
                             <div class="layui-input-block layui-form" id="citySelectTemplateBox" lay-filter="citySelectTemplateBox"></div>
                             <script id="citySelectTemplate" type="text/html">
-                                <select id="venueCity" name="venueCity" lay-filter="citySelect">
+                                <select id="venueCity" name="venueCity" lay-filter="citySelect" lay-verify="required">
                                     <option value="">请选择</option>
                                     {{# for(var i = 0, item; item = d[i++];) { }}
                                     <option value="{{item.dictionaryId}}">{{item.dictionaryName}}</option>
@@ -42,7 +42,7 @@
                             <label class="layui-form-label">选择地区</label>
                             <div class="layui-input-block layui-form" id="areaSelectTemplateBox" lay-filter="areaSelectTemplateBox"></div>
                             <script id="areaSelectTemplate" type="text/html">
-                                <select id="venueArea" name="venueArea">
+                                <select id="venueArea" name="venueArea" lay-verify="required">
                                     <option value="">请选择</option>
                                     {{# for(var i = 0, item; item = d[i++];) { }}
                                     <option value="{{item.dictionaryId}}">{{item.dictionaryName}}</option>
@@ -64,7 +64,7 @@
                     <div class="layui-form-item">
                         <label class="layui-form-label">联系方式</label>
                         <div class="layui-input-block">
-                            <input type="text" id="venueTelephone" name="venueTelephone" class="layui-input" value="" placeholder="请输入场馆联系方式" >
+                            <input type="text" id="venueTelephone" name="venueTelephone" class="layui-input" value="" placeholder="请输入场馆联系方式" lay-verify="required">
                         </div>
                     </div>
                 </div>
@@ -74,7 +74,7 @@
                             <label class="layui-form-label">场馆分类</label>
                             <div class="layui-input-block layui-form" id="venueTypeTemplateBox" lay-filter="venueTypeTemplateBox"></div>
                             <script id="venueTypeTemplate" type="text/html">
-                                <select id="venueType" name="venueType">
+                                <select id="venueType" name="venueType" lay-verify="required">
                                     <option value="">请选择</option>
                                     {{# for(var i = 0, item; item = d[i++];) { }}
                                     <option value="{{item.dictionaryId}}">{{item.dictionaryName}}</option>
@@ -87,7 +87,7 @@
                         <div class="layui-form-item">
                             <label class="layui-form-label">营业模式</label>
                             <div class="layui-input-block layui-form">
-                                <select id="venueCharge" name="venueCharge">
+                                <select id="venueCharge" name="venueCharge" lay-verify="required">
                                     <option value="">请选择</option>
                                     <option value="ticket">门票类</option>
                                     <option value="booking">场次类</option>
@@ -105,7 +105,7 @@
                             <label class="layui-form-label">当前定位</label>
                             <div class="layui-input-block">
                                 <div class="layui-col-sm10">
-                                    <input type="text" id="nowPosition" class="layui-input" value="" readonly="readonly"/>
+                                    <input type="text" id="nowPosition" class="layui-input" value="" readonly="readonly" lay-verify="required"/>
                                 </div>
                                 <div class="layui-col-sm2" style="margin-top: 4px;text-align: center;">
                                     <a class="layui-btn layui-btn-sm" id="BMapPosition" lay-filter="BMapPosition">点击获取</a>
@@ -124,18 +124,18 @@
                 </div>
                 <div class="layui-row">
                     <div class="layui-col-md6">
-                        <div class="layui-form-item layui-form-text">
+                        <div class="layui-form-item">
                             <label class="layui-form-label">营业时间</label>
                             <div class="layui-input-block">
-                                <textarea id="businessHours" name="businessHours" class="layui-textarea" placeholder="请填写场馆开闭管时间安排"></textarea>
+                                <input id="businessHours" name="businessHours" class="layui-input" placeholder="请填写场馆开闭管时间安排">
                             </div>
                         </div>
                     </div>
                     <div class="layui-col-md6">
-                        <div class="layui-form-item layui-form-text">
+                        <div class="layui-form-item">
                             <label class="layui-form-label">乘车路线</label>
                             <div class="layui-input-block">
-                                <textarea id="venueRoute" name="venueRoute" placeholder="请输入路线" class="layui-textarea"></textarea>
+                                <input id="venueRoute" name="venueRoute" placeholder="请输入路线" class="layui-input">
                             </div>
                         </div>
                     </div>
@@ -143,7 +143,7 @@
                 <div class="layui-form-item layui-form-text">
                     <label class="layui-form-label">场馆图片</label>
                     <div class="layui-input-block">
-                        <input type="hidden" id="venuePanorama" name="venuePanorama">
+                        <input type="hidden" id="venuePanorama" name="venuePanorama" lay-verify="needPhoto">
                         <div class="layui-btn-container" id="venuePanoramaFileBox" style="border: 1px solid #e6e6e6;"></div>
                         <script id="venuePanoramaFileDownload" type="text/html">
                             {{# var fileName = 'venuePanorama'; }}
@@ -178,7 +178,7 @@
                     </div>
                 </div>
                 <div class="layui-form-item layui-form-text">
-                    <label class="layui-form-label">预订提示</label>
+                    <label class="layui-form-label">温馨提示</label>
                     <div class="layui-input-block">
                         <textarea id="bookingTips" name="bookingTips" placeholder="请输入预订提示" class="layui-textarea"></textarea>
                     </div>
@@ -239,7 +239,7 @@
                 area: ['80%', '80%'],
                 shadeClose: false,
                 anim: 2,
-                content: top.restAjax.path('route/baidumap/baidu-map.html', []),
+                content: top.restAjax.path('route/publishresource/baidumap/baidu-map.html', []),
                 end: function() {
                     $('#longitude').val(BMapPosition.longitude);
                     $('#latitude').val(BMapPosition.latitude);
@@ -250,7 +250,7 @@
 
         function checkPosition(){
             if(BMapPosition.longitude === '' || BMapPosition.latitude === ''){
-                $('#nowPosition').val('未定位')
+                $('#nowPosition').val(' ')
             } else {
                 $('#nowPosition').val('当前定位(' + BMapPosition.longitude + ',' + BMapPosition.latitude + ')')
             }
@@ -468,6 +468,11 @@
 
         // 校验
         form.verify({
+            needPhoto : function(value){
+                if (!value) {
+                    return '至少上传一张图片';
+                }
+            }
         });
     });
 </script>

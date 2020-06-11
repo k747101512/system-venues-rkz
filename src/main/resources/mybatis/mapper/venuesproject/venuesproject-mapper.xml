@@ -15,6 +15,7 @@
     <resultMap id="venuesProjectForListDTO" type="com.cm.venuebooking.pojo.dtos.venuesproject.VenuesProjectForListDTO">
         <id column="venues_project_id" property="venuesProjectId"/>
         <result column="venue_id" property="venueId"/>
+        <result column="venue_name" property="venueName"/>
         <result column="project_category" property="projectCategory"/>
         <result column="business_hours" property="businessHours"/>
         <result column="project_description" property="projectDescription"/>
@@ -163,7 +164,7 @@
             t1.project_description,
             t1.facilities,
             t1.venues_project_id,
-            t2.venue_name venueName,
+            t2.venue_name,
             t3.dictionary_name projectCategoryName,
             GROUP_CONCAT(t4.dictionary_name) facilitiesNames
         FROM
@@ -173,6 +174,7 @@
         LEFT JOIN data_dictionary t4 ON FIND_IN_SET(t4.dictionary_id,t1.facilities)
         WHERE
             t1.is_delete = 0
+        AND t1.creator = #{creator}
             <if test="keywords != null and keywords != ''">
                 <!-- 这里添加检索关键字 -->
             </if>

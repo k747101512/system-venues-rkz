@@ -20,7 +20,7 @@ public class VenuesInfoDTO {
     private String venueCity;
     @ApiModelProperty(name = "venueOtherService", value = "场馆其他服务")
     private String venueOtherService;
-    @ApiModelProperty(name = "venueCharge", value = "场馆收费类型-字典")
+    @ApiModelProperty(name = "venueCharge", value = "arrive直接到达booking按场次预订ticket按门票预订")
     private String venueCharge;
     @ApiModelProperty(name = "venueRoute", value = "路线")
     private String venueRoute;

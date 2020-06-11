@@ -38,9 +38,7 @@ public class VenuesInfoAppController extends AbstractController {
             @ApiImplicitParam(name = "orderKey", value = "排序方式(默认：'';热度:'hot';距离:'apart';时间:'timeDesc')", paramType = "form", dataType = "String"),
             @ApiImplicitParam(name = "longitude", value = "经度", paramType = "form", dataType = "String"),
             @ApiImplicitParam(name = "latitude", value = "纬度", paramType = "form", dataType = "String"),
-            @ApiImplicitParam(name = "venueType", value = "场馆类型ID", paramType = "form", dataType = "String"),
-            @ApiImplicitParam(name = "venueCity", value = "场馆类型ID", paramType = "form", dataType = "String"),
-            @ApiImplicitParam(name = "venueArea", value = "场馆类型ID", paramType = "form", dataType = "String")
+            @ApiImplicitParam(name = "venueType", value = "场馆类型(博物馆、图书馆等)", paramType = "form", dataType = "String")
     })
     @ApiResponses({@ApiResponse(code = 400, message = "请求失败", response = ErrorResult.class)})
     @GetMapping("listpagevenuesinfo" + ISystemConstant.APP_RELEASE_SUFFIX)
@@ -59,9 +57,7 @@ public class VenuesInfoAppController extends AbstractController {
             @ApiImplicitParam(name = "orderKey", value = "排序方式(默认：'';热度:'hot';距离:'apart';时间:'timeDesc')", paramType = "form", dataType = "String"),
             @ApiImplicitParam(name = "longitude", value = "经度", paramType = "form", dataType = "String"),
             @ApiImplicitParam(name = "latitude", value = "纬度", paramType = "form", dataType = "String"),
-            @ApiImplicitParam(name = "venueType", value = "场馆类型ID", paramType = "form", dataType = "String"),
-            @ApiImplicitParam(name = "venueCity", value = "场馆类型ID", paramType = "form", dataType = "String"),
-            @ApiImplicitParam(name = "venueArea", value = "场馆类型ID", paramType = "form", dataType = "String")
+            @ApiImplicitParam(name = "venueType", value = "场馆类型(博物馆、图书馆等)", paramType = "form", dataType = "String")
     })
     @ApiResponses({@ApiResponse(code = 400, message = "请求失败", response = ErrorResult.class)})
     @GetMapping("listpagevenuesinfo")

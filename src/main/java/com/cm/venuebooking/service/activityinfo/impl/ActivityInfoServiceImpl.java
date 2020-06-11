@@ -10,7 +10,6 @@ import com.cm.common.utils.UUIDUtil;
 import com.cm.venuebooking.dao.activityinfo.IActivityInfoDao;
 import com.cm.venuebooking.pojo.dtos.activityinfo.ActivityInfoDTO;
 import com.cm.venuebooking.pojo.dtos.activityinfo.ActivityInfoListDTO;
-import com.cm.venuebooking.pojo.dtos.matchinfo.MatchInfoDTO;
 import com.cm.venuebooking.pojo.vos.activityinfo.ActivityInfoVO;
 import com.cm.venuebooking.service.BaseService;
 import com.cm.venuebooking.service.activityinfo.IActivityInfoService;
@@ -58,8 +57,6 @@ class ActivityInfoServiceImpl extends BaseService implements IActivityInfoServic
         List<ActivityInfoListDTO> list = activityInfoDao.listActivityListInfo(param);
         for(ActivityInfoListDTO item : list){
             item.setFrontCover(item.getFrontCover().split(",")[0]);
-            item.setActivityTimeStr(item.getActivityTimeStr().substring(0,10));
-            item.setActivityTimeEnd(item.getActivityTimeEnd().substring(0,10));
         }
         return new SuccessResultData(list);
     }

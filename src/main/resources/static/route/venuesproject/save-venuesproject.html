@@ -25,7 +25,7 @@
                     <label class="layui-form-label">所属场馆</label>
                     <div class="layui-input-block layui-form" id="venueSelectTemplateBox" lay-filter="venueSelectTemplateBox"></div>
                     <script id="venueSelectTemplate" type="text/html">
-                        <select id="venueId" name="venueId">
+                        <select id="venueId" name="venueId" lay-verify="required">
                             <option value="">请选择</option>
                             {{# for(var i = 0, item; item = d[i++];) { }}
                             <option value="{{item.venuesInfoId}}">{{item.venueName}}</option>
@@ -37,7 +37,7 @@
                     <label class="layui-form-label">项目类别</label>
                     <div class="layui-input-block layui-form" id="projectSelectTemplateBox" lay-filter="projectSelectTemplateBox"></div>
                     <script id="projectSelectTemplate" type="text/html">
-                        <select id="projectCategory" name="projectCategory">
+                        <select id="projectCategory" name="projectCategory" lay-verify="required">
                             <option value="">请选择</option>
                             {{# for(var i = 0, item; item = d[i++];) { }}
                             <option value="{{item.dictionaryId}}">{{item.dictionaryName}}</option>
@@ -45,20 +45,14 @@
                         </select>
                     </script>
                 </div>
-                <div class="layui-form-item">
-                    <label class="layui-form-label">营业时间</label>
-                    <div class="layui-input-block">
-                        <input type="text" id="businessHours" name="businessHours" class="layui-input" value="" placeholder="请输入营业时间" >
-                    </div>
-                </div>
                 <div class="layui-form-item layui-form-text">
-                    <label class="layui-form-label">项目描述</label>
+                    <label class="layui-form-label">项目简介</label>
                     <div class="layui-input-block">
-                        <textarea id="projectDescription" name="projectDescription" class="layui-textarea" placeholder="请输入项目描述"></textarea>
+                        <textarea id="projectDescription" name="projectDescription" class="layui-textarea" placeholder="根据实际情况简单填写介绍"></textarea>
                     </div>
                 </div>
                 <div class="layui-form-item" pane>
-                    <label class="layui-form-label">场地设施</label>
+                    <label class="layui-form-label">基础设施</label>
                     <div class="layui-input-block layui-form" id="facilitiesCheckboxTemplateBox" lay-filter="facilitiesCheckboxTemplateBox"></div>
                     <script id="facilitiesCheckboxTemplate" type="text/html">
                         {{# for(var i = 0, item; item = d[i++];) { }}
@@ -85,13 +79,10 @@
         base: 'assets/layuiadmin/' //静态资源所在路径
     }).extend({
         index: 'lib/index' //主入口模块
-    }).use(['index', 'form', 'laydate', 'laytpl'], function(){
+    }).use(['index', 'form', 'laytpl'], function(){
         var $ = layui.$;
         var form = layui.form;
         var laytpl = layui.laytpl;
-        var laydate = layui.laydate;
-        var wangEditor = window.wangEditor;
-        var wangEditorObj = {};
 
         // 初始化场馆列表
         function initVenuesInfoSelect() {

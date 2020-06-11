@@ -154,14 +154,14 @@ public class VenuesProjectServiceImpl extends BaseService implements IVenuesProj
         String creator = securityComponent.getCurrentUser().getUserId();
         page.getParams().put("creator",creator);
         PageHelper.startPage(page.getPage(), page.getRows());
-        List<VenuesProjectDTO> venuesProjectDTOs = venuesProjectDao.listVenuesProject(page.getParams());
-        PageInfo<VenuesProjectDTO> pageInfo = new PageInfo<>(venuesProjectDTOs);
-        return new SuccessResultList<>(venuesProjectDTOs, pageInfo.getPageNum(), pageInfo.getTotal());
+        List<VenuesProjectDTO> list = venuesProjectDao.listVenuesProject(page.getParams());
+        PageInfo<VenuesProjectDTO> pageInfo = new PageInfo<>(list);
+        return new SuccessResultList<>(list, pageInfo.getPageNum(), pageInfo.getTotal());
     }
 
     @Override
     public SuccessResultList<List<VenuesProjectForListDTO>> listPageVenuesProjectLocal(ListPage page) throws SearchException{
-
+        page.getParams().put("creator",securityComponent.getCurrentUser().getUserId());
         PageHelper.startPage(page.getPage(), page.getRows());
         List<VenuesProjectForListDTO> venuesProjectForListDTOS = venuesProjectDao.listVenuesProjectLocal(page.getParams());
         PageInfo<VenuesProjectForListDTO> pageInfo = new PageInfo<>(venuesProjectForListDTOS);

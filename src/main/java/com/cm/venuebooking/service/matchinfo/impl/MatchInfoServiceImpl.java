@@ -56,8 +56,6 @@ class MatchInfoServiceImpl extends BaseService implements IMatchInfoService {
         List<MatchInfoListDTO> list = matchInfoDao.listMatchListInfo(param);
         for(MatchInfoListDTO item : list ){
             item.setFrontCover(item.getFrontCover().split(",")[0]);
-            item.setMatchTimeStr(item.getMatchTimeStr().substring(0,10));
-            item.setMatchTimeEnd(item.getMatchTimeEnd().substring(0,10));
         }
         return list;
     }

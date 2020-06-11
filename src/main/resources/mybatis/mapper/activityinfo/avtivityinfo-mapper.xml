@@ -34,13 +34,11 @@
     <!-- 新增赛事信息 -->
     <insert id="saveActivityInfo" parameterType="map">
         INSERT INTO gen_activity_info (
-            activity_id, project_category, front_cover, title, activity_abstract, sign_time_str, sign_time_end, activity_time_str,
-            activity_time_end, activity_place, activity_cost, organizer, activity_summary, sign_attention,
-            other_tips, publish_type, creator, gmt_create, modifier, gmt_modified, is_delete
+            activity_id, project_category, front_cover, title, activity_abstract, organizer, activity_summary,
+            publish_type, creator, gmt_create, modifier, gmt_modified, is_delete
         ) VALUES(
-            #{activityId}, #{projectCategory}, #{frontCover}, #{title}, #{activityAbstract}, #{signTimeStr}, #{signTimeEnd},
-            #{activityTimeStr}, #{activityTimeEnd}, #{activityPlace}, #{activityCost}, #{organizer},#{activitySummary},
-            #{signAttention}, #{otherTips}, '0', #{creator},#{gmtCreate}, #{modifier}, #{gmtMmodified}, #{isDelete}
+            #{activityId}, #{projectCategory}, #{frontCover}, #{title}, #{activityAbstract},#{organizer},#{activitySummary},
+            '1', #{creator},#{gmtCreate}, #{modifier}, #{gmtMmodified}, #{isDelete}
         )
     </insert>
 

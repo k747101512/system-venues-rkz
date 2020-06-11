@@ -1,36 +1,76 @@
 package com.cm.venuebooking.dao.groundbooking;
 
-import com.cm.common.exception.SaveException;
-import com.cm.common.exception.SearchException;
-import com.cm.venuebooking.pojo.dtos.groundbooking.GroundBookingInfoListDTO;
-import com.cm.venuebooking.pojo.dtos.groundconfig.GroundConfigDTO;
-import com.cm.venuebooking.pojo.dtos.groundconfig.GroundInfoDTO;
+import com.cm.venuebooking.pojo.dtos.bookingorder.GroundBookingInfoDTO;
+import com.cm.venuebooking.pojo.dtos.bookingorder.MyTicketListDTO;
+import com.cm.venuebooking.pojo.dtos.bookingorder.VenueProjectDTO;
+import com.cm.venuebooking.pojo.dtos.venuesinfo.VenuesInfoOwDTO;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Map;
 
 /**
+ * 场馆订单数据层
  * @author xwangs
- * @create 2020-05-01 18:30
+ * @create 2020-06-04 21:53
  * @description
  */
 @Repository
 public interface IGroundBookingDao {
 
-    GroundConfigDTO getGroundConfig(Map<String, Object> reqParams) throws SearchException;
+    /**
+     * 管理人所有场馆列表
+     * @param param
+     * @return
+     */
+    List<VenuesInfoOwDTO> listVenuesInfoOw(Map<String, Object> param);
 
-    void saveBookingInfo(Map<String, Object> params) throws SaveException;
 
-    List<Map<String, Object>> listVenues(Map<String, Object> param) throws SearchException;
+    /**
+     * 查询场馆下所有订单
+     * @param params
+     * @return
+     */
+    List<GroundBookingInfoDTO> listPageBookingOrder(Map<String, Object> params);
 
-    List<Map<String, Object>> listProjectByVenue(Map<String, Object> param) throws SearchException;
 
-    List<Map<String, Object>> listGroundByProject(Map<String, Object> param)throws SearchException;
+    /**
+     * 保存预订订单
+     * @param param
+     */
+    void saveBookingInfo(Map<String, Object> param);
 
-    GroundConfigDTO getGroundConfigByProjectId(Map<String, Object> params) throws SearchException;
+    /**
+     * 我的订单列表
+     * @param param
+     * @return
+     */
+    List<GroundBookingInfoDTO> listMyBookingOrder(Map<String, Object> param);
 
-    List<GroundBookingInfoListDTO> listMyBookingOrder(Map<String, Object> param) throws SearchException;
+    /**
+     * 查询我的订单列表
+     * @param params
+     * @return
+     */
+    List<MyTicketListDTO> listPageMyTicket(Map<String, Object> params);
 
-    List<GroundBookingInfoListDTO> listPageBookingOrder(Map<String, Object> params) throws SearchException;
+    /**
+     * 查询我的订单详情
+     * @param params
+     * @return
+     */
+    List<GroundBookingInfoDTO> getMyTicketDetail(Map<String, Object> params);
+
+    /**
+     * 场馆项目场地信息
+     * @param venuesProjectId 项目主键
+     * @return
+     */
+    VenueProjectDTO getVenueFromProject(String venuesProjectId);
+
+    /**
+     *
+     * @param param
+     */
+    void saveBookingItem(Map<String, Object> param);
 }

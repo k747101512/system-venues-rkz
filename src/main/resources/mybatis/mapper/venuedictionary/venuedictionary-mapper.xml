@@ -107,7 +107,7 @@
         WHERE
             t1.is_delete = 0
         <if test="dictionaryParentId != null and dictionaryParentId != ''">
-            AND
+        AND
             t1.dictionary_parent_id = #{dictionaryParentId}
         </if>
     </select>

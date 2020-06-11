@@ -3,7 +3,7 @@ server:
   url: http://192.168.0.109:8082/venuebooking
   title: 西藏场馆管理系统
   servlet:
-    context-path: /xzVenues
+    context-path: /venuebooking
 
 spring:
   thymeleaf:
@@ -101,6 +101,7 @@ access-control:
     - /default.html
     - /assets/**
     - /route/file/downloadfile/**
+    - /route/publishresource/**
   save-paths:
     - /**/save*/**
     - /**/add*/**
@@ -133,3 +134,15 @@ open-platform:
       grantType: authorization_code
       appKey: wx57052635beaab3fa
       appSecret: 4cc3e86da0f1b2855dc99c83f9c451b9
+
+sms:
+# 是否激活，false可在debug模式查看发送的内容
+  active: false
+# default
+  type: default
+  default-sms:
+    account: xd001382
+    password: xd001382125
+    sign: 【日喀则】
+    template:
+      verification-code: '{sign} 您的验证码为 {content}, 有效时间为120秒，若非本人操作，请忽略。'

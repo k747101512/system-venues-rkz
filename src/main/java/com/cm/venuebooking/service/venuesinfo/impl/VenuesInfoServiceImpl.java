@@ -150,8 +150,8 @@ public class VenuesInfoServiceImpl extends BaseService implements IVenuesInfoSer
 
     @Override
     public List<VenuesInfoDTO> listVenuesInfo(Map<String, Object> params) throws SearchException {
-        String creator = securityComponent.getCurrentUser().getUserId();
-        params.put("creator",creator);
+        setDataAuthorityInfo(params);
+        params.put("creator",securityComponent.getCurrentUser().getUserId());
         return venuesInfoDao.listVenuesInfo(params);
     }
 
@@ -256,7 +256,7 @@ public class VenuesInfoServiceImpl extends BaseService implements IVenuesInfoSer
             venuesInfoDTOs = venuesInfoDao.listVenuesByKeyWords(page.getParams());
             formatPosition(myPoint,venuesInfoDTOs);
             pointListCompareToAse(venuesInfoDTOs);
-            int startIndex = page.getPage() - 1;
+            int startIndex = page.getPage() <= 0 ? 0 : page.getPage() - 1;
             List<VenuesInfoDTO> subList = new ArrayList<>(0);
             if(venuesInfoDTOs.size() >= page.getPage() * page.getRows()){
                 subList = venuesInfoDTOs.subList(startIndex * page.getRows(), startIndex * page.getRows() + page.getRows());

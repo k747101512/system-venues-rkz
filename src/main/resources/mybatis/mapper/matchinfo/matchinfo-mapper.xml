@@ -37,14 +37,11 @@
     <!-- 新增赛事信息 -->
     <insert id="saveMatchInfo" parameterType="map">
         INSERT INTO gen_match_info (
-            match_id, project_category, front_cover, title, match_abstract, sign_time_str, sign_time_end, match_time_str,
-            match_time_end, match_place, organizer, undertaker, co_organizer, match_summary, reward,route,
-            sign_attention, other_tips, publish_type, creator, gmt_create, modifier, gmt_modified, is_delete
+            match_id, project_category, front_cover, title, match_abstract, match_summary,
+            publish_type, creator, gmt_create, modifier, gmt_modified, is_delete
         ) VALUES(
-            #{matchId}, #{projectCategory}, #{frontCover}, #{title}, #{matchAbstract}, #{signTimeStr}, #{signTimeEnd},
-            #{matchTimeStr}, #{matchTimeEnd}, #{matchPlace}, #{organizer}, #{undertaker}, #{coOrganizer},
-            #{matchSummary}, #{reward}, #{route}, #{signAttention}, #{otherTips}, '0', #{creator},
-            #{gmtCreate}, #{modifier}, #{gmtMmodified}, #{isDelete}
+            #{matchId}, #{projectCategory}, #{frontCover}, #{title}, #{matchAbstract},#{matchSummary},
+            '1', #{creator},#{gmtCreate}, #{modifier}, #{gmtMmodified}, #{isDelete}
         )
     </insert>
 

@@ -63,17 +63,17 @@ public interface IVenuesInfoDao {
      */
     List<VenuesInfoDTO> listVenuesInfo(Map<String, Object> params) throws SearchException;
 
-    /**
-     * 小程序-根据项目类别查询场馆
-     * @param params
-     * @return
-     */
-    List<VenuesInfoDTO> listVenuesByKeyWords(Map<String, Object> params) throws SearchException;
-
     Map<String, Object> getVenuesInfoForWeChatProgram(Map<String, Object> params) throws SearchException;
 
     Object getCityInfoByName(Map<String, Object> param) throws SearchException;
 
+    /**
+     * app-根据项目类别查询场馆
+     * @param params
+     * @return
+     */
+
+    List<VenuesInfoDTO> listVenuesByKeyWords(Map<String, Object> params) throws SearchException;
     /**
      * app-场馆详情
      * @param params

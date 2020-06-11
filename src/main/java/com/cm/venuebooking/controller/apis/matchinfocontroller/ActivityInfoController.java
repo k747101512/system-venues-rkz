@@ -9,7 +9,6 @@ import com.cm.common.result.SuccessResult;
 import com.cm.common.result.SuccessResultList;
 import com.cm.venuebooking.controller.BaseController;
 import com.cm.venuebooking.pojo.dtos.activityinfo.ActivityInfoDTO;
-import com.cm.venuebooking.pojo.dtos.matchinfo.MatchInfoDTO;
 import com.cm.venuebooking.pojo.vos.activityinfo.ActivityInfoVO;
 import com.cm.venuebooking.service.activityinfo.IActivityInfoService;
 import io.swagger.annotations.*;

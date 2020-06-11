@@ -41,7 +41,8 @@ public class AuthClientSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .logout().logoutSuccessUrl(authServer.getOauthLogout())
                 .and()
-                .authorizeRequests().antMatchers("/app/**", "/route/file/**", "/assets/**", "/wxminiapp/**", "/route/register/**", "/api/file/**", "/api/webregister/**").permitAll()
+                .authorizeRequests().antMatchers("/app/**", "/route/file/**", "/assets/**",
+                "/wxminiapp/**", "/route/register/**", "/api/file/**","/api/sms/getverificationcode/**").permitAll()
                 .and()
                 .authorizeRequests()
                 .anyRequest()

@@ -97,15 +97,6 @@
                             return rowData;
                         }
                     },
-                    {field: 'businessHours', width: 300, title: '营业时间', align:'center',
-                        templet: function(row) {
-                            var rowData = row[this.field];
-                            if(typeof(rowData) === 'undefined' || rowData == null || rowData == '') {
-                                return '-';
-                            }
-                            return rowData;
-                        }
-                    },
                     {field: 'facilitiesNames', width: 300, title: '场地设施', align:'center',
                         templet: function(row) {
                             var rowData = row[this.field];
@@ -210,7 +201,8 @@
                     area: ['100%', '100%'],
                     shadeClose: true,
                     anim: 2,
-                    content: top.restAjax.path('route/venuesproject/list-groundconfig.html?venuesProjectId={venuesProjectId}', [obj.data.venuesProjectId]),
+                    content: top.restAjax.path('route/venuesproject/list-groundinfo.html?venuesInfoId={venueId}&venuesProjectId={venuesProjectId}',
+                        [obj.data.venueId, obj.data.venuesProjectId]),
                     end: function() {
                         reloadTable();
                     }
