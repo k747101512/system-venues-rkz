@@ -6,6 +6,7 @@ import com.cm.common.result.SuccessResult;
 import com.cm.common.result.SuccessResultData;
 import com.cm.common.result.SuccessResultList;
 import com.cm.venuebooking.pojo.dtos.bookingorder.GroundBookingInfoDTO;
+import com.cm.venuebooking.pojo.dtos.bookingorder.MyTicketDetailDTO;
 import com.cm.venuebooking.pojo.dtos.bookingorder.MyTicketListDTO;
 import com.cm.venuebooking.pojo.dtos.groundinfo.GroundInfoDTO;
 import com.cm.venuebooking.pojo.vos.groundbooking.GroundTicketVO;
@@ -52,5 +53,22 @@ public interface IGroundBookingService {
      * @param params
      * @return
      */
-    SuccessResultData<List<GroundBookingInfoDTO>> getMyTicketDetail(String token, Map<String, Object> params);
+    SuccessResultData<MyTicketDetailDTO> getMyTicketDetail(String token, Map<String, Object> params);
+
+    /**
+     * 取消订单(取消所有预订场次)
+     * @param token
+     * @param groundBookingId
+     * @return
+     */
+    SuccessResult removeMyTicket(String token, String groundBookingId);
+
+    /**
+     * 取消订单下某个预订场次
+     * @param token
+     * @param bookingItemId
+     * @param groundBookingId
+     * @return
+     */
+    SuccessResult removeMyTicketItem(String token,String groundBookingId, String bookingItemId);
 }

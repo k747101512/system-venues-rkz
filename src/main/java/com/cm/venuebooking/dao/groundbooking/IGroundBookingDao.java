@@ -1,8 +1,10 @@
 package com.cm.venuebooking.dao.groundbooking;
 
 import com.cm.venuebooking.pojo.dtos.bookingorder.GroundBookingInfoDTO;
+import com.cm.venuebooking.pojo.dtos.bookingorder.GroundBookingItemDTO;
 import com.cm.venuebooking.pojo.dtos.bookingorder.MyTicketListDTO;
 import com.cm.venuebooking.pojo.dtos.bookingorder.VenueProjectDTO;
+import com.cm.venuebooking.pojo.dtos.groundinfo.GroundItemDTO;
 import com.cm.venuebooking.pojo.dtos.venuesinfo.VenuesInfoOwDTO;
 import org.springframework.stereotype.Repository;
 
@@ -41,25 +43,11 @@ public interface IGroundBookingDao {
     void saveBookingInfo(Map<String, Object> param);
 
     /**
-     * 我的订单列表
-     * @param param
-     * @return
-     */
-    List<GroundBookingInfoDTO> listMyBookingOrder(Map<String, Object> param);
-
-    /**
      * 查询我的订单列表
      * @param params
      * @return
      */
     List<MyTicketListDTO> listPageMyTicket(Map<String, Object> params);
-
-    /**
-     * 查询我的订单详情
-     * @param params
-     * @return
-     */
-    List<GroundBookingInfoDTO> getMyTicketDetail(Map<String, Object> params);
 
     /**
      * 场馆项目场地信息
@@ -73,4 +61,44 @@ public interface IGroundBookingDao {
      * @param param
      */
     void saveBookingItem(Map<String, Object> param);
+
+    /**
+     * 根据时间和订单ID查询预订项
+     * @param param
+     * @return
+     */
+    List<GroundItemDTO> getItemByDateTime(Map<String, Object> param);
+
+    /**
+     * 查询订单
+     * @param params
+     * @return
+     */
+    GroundBookingInfoDTO getBookingInfo(Map<String, Object> params);
+
+    /**
+     * 查询我的预订项
+     * @param params
+     * @return
+     */
+    List<GroundBookingItemDTO> listMyBookingItem(Map<String, Object> params);
+
+    /**
+     * 取消我的订单
+     * @param params
+     */
+    void removeMyTicket(Map<String, Object> params);
+
+    /**
+     * 取消我的订单中所有预订的场次时段
+     * @param params
+     */
+    void removeMyItemTicket(Map<String, Object> params);
+
+    /**
+     * 取消订单下某个预订场次
+     * @param params
+     */
+    void removeMyTicketItem(Map<String, Object> params);
+
 }

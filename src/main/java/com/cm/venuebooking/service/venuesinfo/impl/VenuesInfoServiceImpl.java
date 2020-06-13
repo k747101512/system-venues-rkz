@@ -19,6 +19,7 @@ import com.cm.venuebooking.pojo.dtos.venuesproject.VenuesProjectDTO;
 import com.cm.venuebooking.pojo.vos.venuesinfo.VenuesInfoVO;
 import com.cm.venuebooking.service.BaseService;
 import com.cm.venuebooking.service.venuesinfo.IVenuesInfoService;
+import com.cm.venuebooking.singledata.VenuesListSingleData;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,6 +80,7 @@ public class VenuesInfoServiceImpl extends BaseService implements IVenuesInfoSer
         } else {
             setSaveInfo(params);
         }
+        VenuesListSingleData.getInstance().setVenuesList(null);
         venuesInfoDao.saveVenuesInfo(params);
     }
 
@@ -109,6 +111,7 @@ public class VenuesInfoServiceImpl extends BaseService implements IVenuesInfoSer
             setUpdateInfo(params);
         }
         venuesInfoDao.removeVenuesInfo(params);
+        VenuesListSingleData.getInstance().setVenuesList(null);
     }
 
     @Override
@@ -139,6 +142,7 @@ public class VenuesInfoServiceImpl extends BaseService implements IVenuesInfoSer
             setUpdateInfo(params);
         }
         venuesInfoDao.updateVenuesInfo(params);
+        VenuesListSingleData.getInstance().setVenuesList(null);
     }
 
     @Override
@@ -240,38 +244,45 @@ public class VenuesInfoServiceImpl extends BaseService implements IVenuesInfoSer
         List<VenuesInfoDTO> venuesInfoDTOs;
         String orderKye = StringUtils.isEmpty(params.get("orderKey"))? "" : params.get("orderKey").toString();
         orderKye = orderKye.trim();
-        double longitude = StringUtils.isEmpty(params.get(VENUE_SEARCH_LONGITUDE)) ?
-                0 : Double.parseDouble(params.get(VENUE_SEARCH_LONGITUDE).toString());
-        double latitude = StringUtils.isEmpty(params.get(VENUE_SEARCH_LATITUDE)) ?
-                0 : Double.parseDouble(params.get(VENUE_SEARCH_LATITUDE).toString());
-        Point myPoint = new Point();
-        myPoint.setX(latitude);
-        myPoint.setY(longitude);
+        Point myPoint = setPoint(params);
         //按热度查询
         if(VENUE_SEARCH_HOT.equals(orderKye)){
             //TODO 访问量功能实现后添加
         }
         //根据定位排序
         if(VENUE_SEARCH_APART.equals(orderKye)){
-            venuesInfoDTOs = venuesInfoDao.listVenuesByKeyWords(page.getParams());
+            VenuesListSingleData venuesListSingleData = VenuesListSingleData.getInstance();
+            venuesInfoDTOs = venuesListSingleData.getVenuesList(venuesInfoDao);
             formatPosition(myPoint,venuesInfoDTOs);
             pointListCompareToAse(venuesInfoDTOs);
-            int startIndex = page.getPage() <= 0 ? 0 : page.getPage() - 1;
-            List<VenuesInfoDTO> subList = new ArrayList<>(0);
-            if(venuesInfoDTOs.size() >= page.getPage() * page.getRows()){
-                subList = venuesInfoDTOs.subList(startIndex * page.getRows(), startIndex * page.getRows() + page.getRows());
-            }
-            if(venuesInfoDTOs.size() < page.getPage() * page.getRows()
-                && venuesInfoDTOs.size() >= startIndex * page.getRows()){
-                subList = venuesInfoDTOs.subList(startIndex * page.getRows(),venuesInfoDTOs.size());
-            }
-            return new SuccessResultList<>(subList, page.getPage(), Long.parseLong(venuesInfoDTOs.size() + ""));
+            List<VenuesInfoDTO> subList = venuesInfoDTOs.subList(0,venuesInfoDTOs.size() > 10 ? 10 : venuesInfoDTOs.size());
+            return new SuccessResultList<>(subList, page.getPage(), Long.parseLong(subList.size()+ ""));
         }
         PageHelper.startPage(page.getPage(), page.getRows());
         venuesInfoDTOs = venuesInfoDao.listVenuesByKeyWords(page.getParams());
         formatPosition(myPoint,venuesInfoDTOs);
         PageInfo<VenuesInfoDTO> pageInfo = new PageInfo<>(venuesInfoDTOs);
         return new SuccessResultList<>(venuesInfoDTOs, pageInfo.getPageNum(), pageInfo.getTotal());
+    }
+
+    @Override
+    public SuccessResultData<List<VenuesInfoDTO>> listRangeVenuesInfo(Map<String, Object> params) {
+        VenuesListSingleData venuesListSingleData = VenuesListSingleData.getInstance();
+        List<VenuesInfoDTO> venuesInfoDTOs = venuesListSingleData.getVenuesList(venuesInfoDao);
+        Point myPoint = setPoint(params);
+        formatPosition(myPoint, venuesInfoDTOs);
+        List<VenuesInfoDTO> screeningResult = new ArrayList<>(16);
+        double range = Double.parseDouble(params.get("range").toString());
+        double apart;
+        if(venuesInfoDTOs != null && venuesInfoDTOs.size() > 0){
+            for (VenuesInfoDTO item : venuesInfoDTOs){
+                apart = Double.parseDouble(item.getApart());
+                if(apart <= range){
+                    screeningResult.add(item);
+                }
+            }
+        }
+        return new SuccessResultData(screeningResult);
     }
 
     /**
@@ -314,6 +325,17 @@ public class VenuesInfoServiceImpl extends BaseService implements IVenuesInfoSer
                 return apart1 > apart2 ? 1 : -1;
             }
         });
+    }
+
+    private Point setPoint(Map<String, Object> params){
+        double longitude = StringUtils.isEmpty(params.get(VENUE_SEARCH_LONGITUDE)) ?
+                0 : Double.parseDouble(params.get(VENUE_SEARCH_LONGITUDE).toString());
+        double latitude = StringUtils.isEmpty(params.get(VENUE_SEARCH_LATITUDE)) ?
+                0 : Double.parseDouble(params.get(VENUE_SEARCH_LATITUDE).toString());
+        Point Point = new Point();
+        Point.setX(latitude);
+        Point.setY(longitude);
+        return Point;
     }
 
     @Override

@@ -139,4 +139,10 @@ public interface IVenuesInfoService {
 
     VenuesInfoDTO getVenuesInfoByIdForApp(String token, String venuesInfoId);
 
+    /**
+     * 获取指定距离内所有场馆
+     * @param params
+     * @return
+     */
+    SuccessResultData<List<VenuesInfoDTO>> listRangeVenuesInfo(Map<String, Object> params);
 }

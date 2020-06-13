@@ -20,18 +20,37 @@
         <result property="phoneNumber" column="phone_number"></result>
         <result property="orderType" column="order_type"></result>
     </resultMap>
+    
+    <resultMap id="groundBooingItemDTO" type="com.cm.venuebooking.pojo.dtos.bookingorder.GroundBookingItemDTO">
+        <id property="bookingItemId" column="booking_item_id"></id>
+        <result property="bookingInfoId" column="booking_info_id"></result>
+        <result property="groundItemId" column="ground_item_id"></result>
+        <result property="bookingOrderDate" column="booking_order_date"></result>
+        <result property="timeStr" column="time_str"></result>
+        <result property="timeEnd" column="time_end"></result>
+        <result property="price" column="price"></result>
+        <result property="arriveType" column="arrive_type"></result>
+        <result property="orderType" column="order_type"></result>
+        <result property="reason" column="reason"></result>
+        <result property="groundName" column="ground_name"></result>
+    </resultMap>
 
     <resultMap id="myTicketListDTO" type="com.cm.venuebooking.pojo.dtos.bookingorder.MyTicketListDTO">
+        <id property="groundBookingId" column="ground_booking_id"></id>
         <result property="serial" column="serial"></result>
-        <result property="bookingDate" column="gmt_create"></result>
-        <result property="venueName" column="venue_name"></result>
+        <result property="venuesName" column="venues_name"></result>
+        <result property="venuePanorama" column="venue_panorama"></result>
+        <result property="projectName" column="project_name"></result>
+        <result property="gmtCreate" column="gmt_create"></result>
+        <result property="orderType" column="order_type"></result>
         <result property="price" column="price"></result>
+        <result property="itemCount" column="item_count"></result>
     </resultMap>
 
     <resultMap id="venueProjectDTO" type="com.cm.venuebooking.pojo.dtos.bookingorder.VenueProjectDTO">
         <result property="venuesInfoId" column="venues_info_id"></result>
         <result property="venueName" column="venue_name"></result>
-        <result property="venuesProjectId" column="serial"></result>
+        <result property="venuesProjectId" column="venues_project_id"></result>
         <result property="projectName" column="project_name"></result>
     </resultMap>
 
@@ -69,16 +88,16 @@
             (ground_booking_id,serial,venues_info_id,venues_name,venues_project_id,project_name,user_id,nick_name,id_card_number,
              phone_number,order_type,creator,gmt_create,modifier,gmt_modified,is_delete)
         VALUES
-            (#{groundBookingId},#{serial},#{venuesInfoId},#{venues_name},#{venuesProjectId},#{project_name},#{userId},#{nickName},#{idCardNumber},
+            (#{groundBookingId},#{serial},#{venuesInfoId},#{venuesName},#{venuesProjectId},#{projectName},#{userId},#{nickName},#{idCardNumber},
              #{phoneNumber},#{orderType},#{creator},#{gmtCreate},#{modifier},#{gmtModified},#{isDelete})
     </insert>
 
     <insert id="saveBookingItem" parameterType="map">
         INSERT INTO gen_booking_item
-            (booking_item_id,booking_info_id,ground_item_id,booking_order_date,time_str,time_end,price,arrive_type,
+            (booking_item_id,booking_info_id,ground_item_id,ground_name,booking_order_date,time_str,time_end,price,arrive_type,
              creator,gmt_create,modifier,gmt_modified,is_delete)
         VALUES
-            (#{bookingItemId},#{bookingInfoId},#{groundItemId},#{bookingOrderDate},#{timeStr},#{timeEnd},
+            (#{bookingItemId},#{bookingInfoId},#{groundItemId},#{groundName},#{bookingOrderDate},#{timeStr},#{timeEnd},
              #{price},#{arriveType},#{creator},#{gmtCreate},#{modifier},#{gmtModified},#{isDelete})
     </insert>
 
@@ -98,41 +117,120 @@
 
     <select id="listPageMyTicket" parameterType="map" resultMap="myTicketListDTO">
         SELECT
+            t1.ground_booking_id,
             t1.serial,
-            t3.venue_name,
+            t1.venues_name,
+            t1.project_name,
+            t1.order_type,
             t1.gmt_create,
-            SUM(t4.price) price
+            t2.venue_panorama,
+            IFNULL(SUM(t3.price),'0') price,
+            COUNT(t3.booking_item_id) item_count
         FROM
             gen_booking_info t1
-                LEFT JOIN gen_ground_info t2 ON t2.ground_info_id = t1.ground_info_id
-                LEFT JOIN gen_venues_info t3 ON t3.venues_info_id = t2.venues_info_id
-                LEFT JOIN gen_ground_item t4 ON FIND_IN_SET(t4.ground_item_id,t1.ground_item_id)
+        LEFT JOIN gen_venues_info t2 ON t2.venues_info_id = t1.venues_info_id
+        LEFT JOIN gen_booking_item t3 ON t3.booking_info_id = t1.ground_booking_id AND t3.order_type <![CDATA[<>]]> '1'
         WHERE
             t1.user_id = #{userId}
+        <if test="showSwitch != null and showSwitch != '' and showSwitch == 'normal'">
+            AND t1.order_type = '0'
+        </if>
+        <if test="showSwitch != null and showSwitch != '' and showSwitch == 'cancel'">
+            AND t1.order_type = '1'
+        </if>
         GROUP BY
-            t1.serial
-        ORDER BY t1.creator DESC
+            t1.ground_booking_id
+        ORDER BY
+            t1.order_type ASC,t1.gmt_create DESC
+    </select>
+    
+    <select id="getItemByDateTime" parameterType="map" resultMap="groundBooingItemDTO">
+        SELECT
+            t1.booking_item_id,
+            t1.booking_info_id,
+            t1.ground_item_id,
+            t1.booking_order_date,
+            t1.time_str,
+            t1.time_end,
+            t1.price,
+            t1.arrive_type,
+            t1.reason
+        FROM
+            gen_booking_item t1
+        WHERE
+            t1.booking_info_id = #{bookingInfoId}
+        AND t1.order_type <![CDATA[<>]]> '1'
+        AND CONCAT(t1.booking_order_date,' ',t1.time_end) > #{nowDateTime}
     </select>
 
-    <select id="getMyTicketDetail" parameterType="map" resultMap="groundBookingInfoDTO">
+    <select id="getBookingInfo" parameterType="map" resultMap="groundBookingInfoDTO">
         SELECT
-            t3.venue_name,
-            t5.dictionary_name,
-            t1.booking_order_date,
-            t2.time_str,
-            t2.time_end,
-            t2.price
+            t1.ground_booking_id,
+            t1.serial,
+            t1.venues_info_id,
+            t1.venues_name,
+            t1.venues_project_id,
+            t1.project_name,
+            t1.user_id,
+            t1.nick_name,
+            t1.id_card_number,
+            t1.phone_number,
+            t1.order_type
         FROM
             gen_booking_info t1
-        LEFT JOIN gen_ground_item t2 ON t2.ground_item_id = t1.ground_item_id
-        LEFT JOIN gen_venues_info t3 ON t3.venues_info_id = t1.venues_info_id
-        LEFT JOIN gen_venues_project t4 ON t4.venues_project_id = t1.venues_project_id
-        LEFT JOIN data_dictionary t5 ON t5.dictionary_id = t4.project_category
         WHERE
-            t1.user_id = #{userId}
-        AND t1.serial = #{serial}
-        ORDER BY
-            CONCAT(t1.booking_order_date, ' ', t2.time_str) ASC
+            t1.ground_booking_id = #{groundBookingId}
+        AND t1.user_id = #{userId}
     </select>
+
+    <select id="listMyBookingItem" parameterType="map" resultMap="groundBooingItemDTO">
+        SELECT
+            t1.booking_item_id,
+            t1.booking_info_id,
+            t1.ground_item_id,
+            t1.ground_name,
+            t1.booking_order_date,
+            t1.time_str,
+            t1.time_end,
+            t1.price,
+            t1.arrive_type,
+            t1.order_type
+        FROM
+            gen_booking_item t1
+        WHERE
+            t1.booking_info_id = #{bookingInfoId}
+        ORDER BY
+            t1.booking_order_date,t1.time_str DESC
+    </select>
+
+    <update id="removeMyTicket" parameterType="map">
+        UPDATE gen_booking_info SET
+            order_type = '1',
+            modifier = #{modifier},
+            gmt_modified = #{gmtModified}
+        WHERE
+            user_id = #{userId}
+        AND ground_booking_id = #{groundBookingId}
+    </update>
+
+    <update id="removeMyItemTicket" parameterType="map">
+        UPDATE gen_booking_item SET
+            order_type = '1',
+            modifier = #{modifier},
+            gmt_modified = #{gmtModified}
+        WHERE
+            creator = #{userId}
+        AND booking_info_id = #{groundBookingId}
+    </update>
+
+    <update id="removeMyTicketItem" parameterType="map">
+        UPDATE gen_booking_item SET
+            order_type = '1',
+            modifier = #{modifier},
+            gmt_modified = #{gmtModified}
+        WHERE
+            creator = #{userId}
+        AND booking_item_id = #{bookingItemId}
+    </update>
 
 </mapper>

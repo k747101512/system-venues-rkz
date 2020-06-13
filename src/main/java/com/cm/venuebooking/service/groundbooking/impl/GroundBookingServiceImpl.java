@@ -12,10 +12,7 @@ import com.cm.common.utils.HashMapUtil;
 import com.cm.common.utils.UUIDUtil;
 import com.cm.manager.sms.manager.VerificationCodeManager;
 import com.cm.venuebooking.dao.groundbooking.IGroundBookingDao;
-import com.cm.venuebooking.pojo.dtos.bookingorder.GroundBookingInfoDTO;
-import com.cm.venuebooking.pojo.dtos.bookingorder.GroundbookingItemDTO;
-import com.cm.venuebooking.pojo.dtos.bookingorder.MyTicketListDTO;
-import com.cm.venuebooking.pojo.dtos.bookingorder.VenueProjectDTO;
+import com.cm.venuebooking.pojo.dtos.bookingorder.*;
 import com.cm.venuebooking.pojo.dtos.groundinfo.GroundItemDTO;
 import com.cm.venuebooking.pojo.dtos.venuesinfo.VenuesInfoOwDTO;
 import com.cm.venuebooking.pojo.vos.groundbooking.GroundTicketItemVO;
@@ -85,7 +82,7 @@ public class GroundBookingServiceImpl extends BaseService implements IGroundBook
         bookingInfo.setVenuesInfoId(venueProjectDTO.getVenuesInfoId());
         bookingInfo.setVenuesName(venueProjectDTO.getVenueName());
         bookingInfo.setVenuesProjectId(venueProjectDTO.getVenuesProjectId());
-        bookingInfo.setVenuesName(venueProjectDTO.getVenueName());
+        bookingInfo.setProjectName(venueProjectDTO.getProjectName());
         bookingInfo.setUserId(appTokenUser.getId());
         bookingInfo.setNickName(appTokenUser.getName());
         bookingInfo.setIdCardNumber("");
@@ -96,7 +93,7 @@ public class GroundBookingServiceImpl extends BaseService implements IGroundBook
         List<GroundTicketItemVO> itemList = groundTicketVO.getBookingItemList();
         if(itemList !=null && itemList.size() > 0){
             //保存所选预订项
-            GroundbookingItemDTO bookingItem = new GroundbookingItemDTO();
+            GroundBookingItemDTO bookingItem = new GroundBookingItemDTO();
             for(GroundTicketItemVO itemInfo : itemList){
                 String bookingItemId = UUIDUtil.getUUID();
                 bookingItem.setBookingItemId(bookingItemId);
@@ -105,25 +102,19 @@ public class GroundBookingServiceImpl extends BaseService implements IGroundBook
                 bookingItem.setBookingOrderDate(itemInfo.getBookingOrderDate());
                 //查询场次时刻信息
                 GroundItemDTO groundItemDTO = groundInfoService.getGroundItem(itemInfo.getGroundItemId());
-                bookingItem.setTimeStr(groundItemDTO.getTimeEnd());
+                bookingItem.setGroundName(groundItemDTO.getGroundName());
+                bookingItem.setTimeStr(groundItemDTO.getTimeStr());
                 bookingItem.setTimeEnd(groundItemDTO.getTimeEnd());
                 bookingItem.setPrice(groundItemDTO.getPrice());
                 bookingItem.setArriveType("0");
+                bookingItem.setOrderType("0");
                 Map<String, Object> itemParam = HashMapUtil.beanToMap(bookingItem);
                 setSaveInfo(token,itemParam);
-                groundBookingDao.saveBookingItem(param);
+                groundBookingDao.saveBookingItem(itemParam);
             }
         }
         groundBookingDao.saveBookingInfo(param);
         return new SuccessResult();
-    }
-
-    @Override
-    public SuccessResultData<List<GroundBookingInfoDTO>> getMyTicketDetail(String token, Map<String, Object> params) {
-        AppTokenUser appTokenUser = AppTokenManager.getInstance().getToken(token).getAppTokenUser();
-        params.put("userId",appTokenUser.getId());
-        List<GroundBookingInfoDTO> list = groundBookingDao.getMyTicketDetail(params);
-        return new SuccessResultData<>(list);
     }
 
     private String generateSerialNumber(){
@@ -138,8 +129,81 @@ public class GroundBookingServiceImpl extends BaseService implements IGroundBook
         page.getParams().put("userId",appTokenUser.getId());
         PageHelper.startPage(page.getPage(),page.getRows());
         List<MyTicketListDTO> list = groundBookingDao.listPageMyTicket(page.getParams());
+        if(list != null && list.size() > 0){
+            Map<String, Object> param = getHashMap(2);
+            for (MyTicketListDTO ticket : list){
+                ticket.setGmtCreate(ticket.getGmtCreate().substring(0,19));
+                if(!"1".equals(ticket.getOrderType())){
+                    //判断订单是否超时
+                    param.put("bookingInfoId",ticket.getGroundBookingId());
+                    param.put("nowDateTime", DateUtil.getTime());
+                    List<GroundItemDTO> lastItemList = groundBookingDao.getItemByDateTime(param);
+                    if(lastItemList == null || lastItemList.size() == 0){
+                        ticket.setOrderType("2");
+                    }
+                }
+                //预订时段集合
+                List<GroundBookingItemDTO> itemList = groundBookingDao.listMyBookingItem(param);
+                ticket.setItemDTOList(itemList);
+            }
+
+        }
         PageInfo<MyTicketListDTO> pageInfo = new PageInfo<>(list);
         return new SuccessResultList<>(list,pageInfo.getPageNum(),pageInfo.getTotal());
     }
 
+    @Override
+    public SuccessResultData<MyTicketDetailDTO> getMyTicketDetail(String token, Map<String, Object> params) {
+        AppTokenUser appTokenUser = AppTokenManager.getInstance().getToken(token).getAppTokenUser();
+        params.put("userId",appTokenUser.getId());
+        MyTicketDetailDTO myTicketDetailDTO = new MyTicketDetailDTO();
+        //查询订单信息
+        GroundBookingInfoDTO bookingInfoDTO = groundBookingDao.getBookingInfo(params);
+        myTicketDetailDTO.setBookingInfoId(bookingInfoDTO.getGroundBookingId());
+        myTicketDetailDTO.setSerial(bookingInfoDTO.getSerial());
+        myTicketDetailDTO.setVenuesName(bookingInfoDTO.getVenuesName());
+        myTicketDetailDTO.setProjectName(bookingInfoDTO.getProjectName());
+        //查询预订项列表
+        params.put("bookingInfoId", bookingInfoDTO.getGroundBookingId());
+        List<GroundBookingItemDTO> itemList = groundBookingDao.listMyBookingItem(params);
+        for(GroundBookingItemDTO myItem : itemList ){
+            if(!"1".equals(myItem.getOrderType())){
+                String nowDataTime = DateUtil.getTime();
+                String lastDateTime = myItem.getBookingOrderDate() + " " + myItem.getTimeEnd();
+                boolean overdue = DateUtil.compareDate(nowDataTime, lastDateTime);
+                if(overdue){
+                    myItem.setOrderType("2");
+                }
+            }
+            myItem.setTimeStr(myItem.getTimeStr().substring(0,5));
+            myItem.setTimeEnd(myItem.getTimeEnd().substring(0,5));
+        }
+        myTicketDetailDTO.setItemDTOList(itemList);
+        return new SuccessResultData<>(myTicketDetailDTO);
+    }
+
+    @Override
+    public SuccessResult removeMyTicket(String token, String groundBookingId) {
+        AppTokenUser appTokenUser = AppTokenManager.getInstance().getToken(token).getAppTokenUser();
+        Map<String, Object> params = getHashMap(4);
+        params.put("userId",appTokenUser.getId());
+        params.put("groundBookingId",groundBookingId);
+        setUpdateInfo(token,params);
+        //修改订单状态
+        groundBookingDao.removeMyTicket(params);
+        //修改订单下所有预订场次状态
+        groundBookingDao.removeMyItemTicket(params);
+        return new SuccessResult();
+    }
+
+    @Override
+    public SuccessResult removeMyTicketItem(String token,String groundBookingId, String bookingItemId) {
+        AppTokenUser appTokenUser = AppTokenManager.getInstance().getToken(token).getAppTokenUser();
+        Map<String, Object> params = getHashMap(4);
+        params.put("userId",appTokenUser.getId());
+        params.put("bookingItemId",bookingItemId);
+        setUpdateInfo(token,params);
+        groundBookingDao.removeMyTicketItem(params);
+        return new SuccessResult();
+    }
 }

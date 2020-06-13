@@ -165,6 +165,10 @@ public class GroundInfoServiceImpl extends BaseService implements IGroundInfoSer
             for(GroundInfoDTO info : groundInfoList ){
                 params.put("groundInfoId",info.getGroundInfoId());
                 List<GroundItemDTO> itemList = groundInfoDao.listGroundItem(params);
+                for(GroundItemDTO item : itemList){
+                    item.setTimeStr(item.getTimeStr().substring(0,5));
+                    item.setTimeEnd(item.getTimeEnd().substring(0,5));
+                }
                 info.setGroundItemList(itemList != null ? itemList : new ArrayList<>(0));
             }
         }

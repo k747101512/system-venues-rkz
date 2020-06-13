@@ -68,12 +68,13 @@ public interface IVenuesInfoDao {
     Object getCityInfoByName(Map<String, Object> param) throws SearchException;
 
     /**
-     * app-根据项目类别查询场馆
+     *
      * @param params
      * @return
+     * @throws SearchException
      */
-
     List<VenuesInfoDTO> listVenuesByKeyWords(Map<String, Object> params) throws SearchException;
+
     /**
      * app-场馆详情
      * @param params
