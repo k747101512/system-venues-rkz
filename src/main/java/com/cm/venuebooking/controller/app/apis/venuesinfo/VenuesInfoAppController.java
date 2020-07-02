@@ -38,7 +38,8 @@ public class VenuesInfoAppController extends AbstractController {
             @ApiImplicitParam(name = "orderKey", value = "排序方式(默认：'';热度:'hot';距离:'apart';时间:'timeDesc')", paramType = "form", dataType = "String"),
             @ApiImplicitParam(name = "longitude", value = "经度", paramType = "form", dataType = "String"),
             @ApiImplicitParam(name = "latitude", value = "纬度", paramType = "form", dataType = "String"),
-            @ApiImplicitParam(name = "venueType", value = "场馆类型(博物馆、图书馆等)", paramType = "form", dataType = "String")
+            @ApiImplicitParam(name = "venueType", value = "场馆类型(博物馆、图书馆等)", paramType = "form", dataType = "String"),
+            @ApiImplicitParam(name = "selfLocation", value = "默认百度'BD'，腾讯:'TX'", paramType = "form", dataType = "String")
     })
     @ApiResponses({@ApiResponse(code = 400, message = "请求失败", response = ErrorResult.class)})
     @GetMapping("listpagevenuesinfo" + ISystemConstant.APP_RELEASE_SUFFIX)
@@ -57,7 +58,8 @@ public class VenuesInfoAppController extends AbstractController {
             @ApiImplicitParam(name = "orderKey", value = "排序方式(默认：'';热度:'hot';距离:'apart';时间:'timeDesc')", paramType = "form", dataType = "String"),
             @ApiImplicitParam(name = "longitude", value = "经度", paramType = "form", dataType = "String"),
             @ApiImplicitParam(name = "latitude", value = "纬度", paramType = "form", dataType = "String"),
-            @ApiImplicitParam(name = "venueType", value = "场馆类型(博物馆、图书馆等)", paramType = "form", dataType = "String")
+            @ApiImplicitParam(name = "venueType", value = "场馆类型(博物馆、图书馆等)", paramType = "form", dataType = "String"),
+            @ApiImplicitParam(name = "selfLocation", value = "默认百度'BD'，腾讯:'TX'", paramType = "form", dataType = "String")
     })
     @ApiResponses({@ApiResponse(code = 400, message = "请求失败", response = ErrorResult.class)})
     @GetMapping("listpagevenuesinfo")
@@ -69,23 +71,29 @@ public class VenuesInfoAppController extends AbstractController {
 
     @ApiOperation(value = "APP场馆信息详情(通过ID)", notes = "APP场馆信息详情(通过ID)接口")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "venuesInfoId", value = "场馆信息表ID", paramType = "path")
+            @ApiImplicitParam(name = "venuesInfoId", value = "场馆信息表ID", paramType = "path"),
+            @ApiImplicitParam(name = "resultLocation", value = "默认百度'BD'，腾讯:'TX'", paramType = "form", dataType = "String"),
     })
     @ApiResponses({@ApiResponse(code = 400, message = "请求失败", response = ErrorResult.class)})
     @GetMapping("getvenuesinfobyid" + ISystemConstant.APP_RELEASE_SUFFIX + "/{venuesInfoId}")
     public VenuesInfoDTO getVenuesInfoById(@PathVariable("venuesInfoId") String venuesInfoId) throws SearchException {
-        return venuesInfoService.getVenuesInfoByIdForApp(null,venuesInfoId);
+        Map<String, Object> params = requestParams();
+        params.put("venuesInfoId", venuesInfoId);
+        return venuesInfoService.getVenuesInfoByIdForApp(null,params);
     }
 
     @ApiOperation(value = "APP场馆信息详情(通过ID,token)", notes = "APP场馆信息详情(通过ID)接口")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "token", value = "token", paramType = "header"),
-            @ApiImplicitParam(name = "venuesInfoId", value = "场馆信息表ID", paramType = "path")
+            @ApiImplicitParam(name = "venuesInfoId", value = "场馆信息表ID", paramType = "path"),
+            @ApiImplicitParam(name = "resultLocation", value = "默认百度'BD'，腾讯:'TX'", paramType = "form", dataType = "String"),
     })
     @ApiResponses({@ApiResponse(code = 400, message = "请求失败", response = ErrorResult.class)})
     @GetMapping("getvenuesinfobyid/{venuesInfoId}")
     public VenuesInfoDTO getVenuesInfoByIdToken(@RequestHeader("token") String token, @PathVariable("venuesInfoId") String venuesInfoId) throws SearchException {
-        return venuesInfoService.getVenuesInfoByIdForApp(token,venuesInfoId);
+        Map<String, Object> params = requestParams();
+        params.put("venuesInfoId", venuesInfoId);
+        return venuesInfoService.getVenuesInfoByIdForApp(token,params);
     }
 
     @ApiOperation(value = "场馆信息表列表", notes = "场馆信息表列表接口")

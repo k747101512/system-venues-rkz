@@ -54,6 +54,21 @@
         <result property="projectName" column="project_name"></result>
     </resultMap>
 
+    <resultMap id="bookingOrderList" type="com.cm.venuebooking.pojo.dtos.bookingorder.BookingOrderList">
+        <id property="bookingItemId" column="booking_item_id"></id>
+        <result property="serial" column="serial"></result>
+        <result property="venuesName" column="venues_name"></result>
+        <result property="projectName" column="project_name"></result>
+        <result property="groundName" column="ground_name"></result>
+        <result property="bookingOrderDate" column="booking_order_date"></result>
+        <result property="timeStr" column="time_str"></result>
+        <result property="timeEnd" column="time_end"></result>
+        <result property="price" column="price"></result>
+        <result property="gmtCreate" column="gmt_create"></result>
+        <result property="nikeName" column="nike_name"></result>
+        <result property="userId" column="user_id"></result>
+    </resultMap>
+
     <select id="listVenuesInfoOw" parameterType="map" resultMap="venuesInfoOwDTO">
         SELECT
             t1.ow_id,
@@ -65,22 +80,41 @@
             t1.user_id = #{userId}
     </select>
 
-    <select id="listPageBookingOrder" parameterType="map" resultMap="groundBookingInfoDTO">
+    <select id="listPageBookingOrder" parameterType="map" resultMap="bookingOrderList">
         SELECT
-            t1.ground_booking_id,
-            t1.ground_info_id,
-            t1.user_name,
-            t1.id_card_number,
-            t1.phone_number,
+            t1.booking_item_id,
+            t2.venues_name,
+            t2.project_name,
+            t1.ground_name,
             t1.booking_order_date,
-            t1.arrive_type
+            t1.time_str,
+            t1.time_end,
+            t1.price,
+            t1.gmt_create,
+            t2.nick_name,
+            t2.user_id
         FROM
-            gen_booking_info t1
-        LEFT JOIN gen_ground_info t2 ON t2.ground_info_id = t1.ground_info_id
+            gen_booking_item t1
+        LEFT JOIN gen_booking_info t2 ON t2.ground_booking_id = t1.booking_info_id
         WHERE
-            t1.is_delete = 0
-        AND FIND_IN_SET(t2.venues_info_id,#{venuesInfoId})
-        ORDER BY t1.booking_order_date DESC
+            t1.is_delete = '0'
+        AND t1.order_type = '0'
+        <if test="data_authority != null and data_authority != ''">
+            <if test="data_authority == 'self' ">
+                AND FIND_IN_SET(t2.venues_info_id,#{venuesInfoIds})
+            </if>
+        </if>
+        <if test="keywords != null and keywords != ''">
+            AND (
+            t2.venues_name LIKE CONCAT('%',#{keywords},'%')
+            OR
+            t2.serial LIKE CONCAT('%',#{keywords},'%')
+            OR
+            t2.project_name LIKE CONCAT('%',#{keywords},'%')
+            )
+        </if>
+        ORDER BY
+            t1.gmt_create DESC,t1.booking_order_date ASC
     </select>
 
     <insert id="saveBookingInfo" parameterType="map">

@@ -4,6 +4,7 @@ import com.cm.common.exception.RemoveException;
 import com.cm.common.exception.SaveException;
 import com.cm.common.exception.SearchException;
 import com.cm.common.pojo.ListPage;
+import com.cm.common.pojo.dtos.ZTreeDTO;
 import com.cm.common.result.SuccessResult;
 import com.cm.common.result.SuccessResultData;
 import com.cm.common.result.SuccessResultList;
@@ -137,7 +138,13 @@ public interface IVenuesInfoService {
 
     SuccessResultList<List<VenuesInfoDTO>> listPageVenuesInfoFroApp(String token, ListPage page) throws SearchException;
 
-    VenuesInfoDTO getVenuesInfoByIdForApp(String token, String venuesInfoId);
+    /**
+     * 查询场馆详情
+     * @param token
+     * @param param
+     * @return
+     */
+    VenuesInfoDTO getVenuesInfoByIdForApp(String token, Map<String, Object> param);
 
     /**
      * 获取指定距离内所有场馆
@@ -145,4 +152,18 @@ public interface IVenuesInfoService {
      * @return
      */
     SuccessResultData<List<VenuesInfoDTO>> listRangeVenuesInfo(Map<String, Object> params);
+
+    /**
+     * 后台-场馆zTree
+     * 有数据权限校验
+     * @return
+     */
+    List<ZTreeDTO> listVenuesInfoZTree();
+
+    /**
+     * resources-场馆分页列表
+     * @param page
+     * @return
+     */
+    List<VenuesInfoDTO> listPageVenuesInfoResources(ListPage page);
 }

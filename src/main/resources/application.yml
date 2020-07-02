@@ -55,7 +55,7 @@ mybatis:
 swagger:
   title: 接口文档
   description: 场馆预订系统接口文档
-  service-url: https://baidu.com/
+  service-url: https://www.wgink.ink
   version: 1.0
   swagger-base-package: com.cm
 
@@ -71,14 +71,14 @@ file:
 # 安全
 security:
   oauth2:
-    oauth-server: http://39.104.124.118:7001/usercenter
-    #oauth-server: https://www.wgink.ink/usercenter
+    #oauth-server: http://39.104.124.118:7001/usercenter
+    oauth-server: https://www.wgink.ink/usercenter
     oauth-logout: ${security.oauth2.oauth-server}/logout?redirect_uri=${server.url}
     client:
-      #client-id: 98d88b518a8946798134218c7c95ccf2
-      client-id: c49ddbe469864d9f96c51669626d9ed5
-      #client-secret: UWJBQTVJa3o0bng0N3hPeEF0ZjV5dmZGMFFSSnZRVklWaFRRQVFlYkYra21ac2wwZTJHWk5NbXh3L3h3U2c4Rg==
-      client-secret: aktQODFqcjd6MVQ3ODRtVVcrQUt6REpDWmMwQytaRnUrQVpUYytSK2dzWW1ac2wwZTJHWk5NbXh3L3h3U2c4Rg==
+      client-id: 98d88b518a8946798134218c7c95ccf2
+      #client-id: c49ddbe469864d9f96c51669626d9ed5
+      client-secret: UWJBQTVJa3o0bng0N3hPeEF0ZjV5dmZGMFFSSnZRVklWaFRRQVFlYkYra21ac2wwZTJHWk5NbXh3L3h3U2c4Rg==
+      #client-secret: aktQODFqcjd6MVQ3ODRtVVcrQUt6REpDWmMwQytaRnUrQVpUYytSK2dzWW1ac2wwZTJHWk5NbXh3L3h3U2c4Rg==
       user-authorization-uri: ${security.oauth2.oauth-server}/oauth/authorize
       access-token-uri: ${security.oauth2.oauth-server}/oauth/token
       grant-type: authorization_code
@@ -129,10 +129,10 @@ open-platform:
     mini-app:
       active: true
       authorizeUrl: https://api.weixin.qq.com/sns/jscode2session
-      bindUserUrl: http://39.104.124.118:7001/usercenter/wxminiapp/sign/login
-      #bindUserUrl: https://www.wgink.ink/usercenter/wxminiapp/sign/login
+      #bindUserUrl: http://39.104.124.118:7001/usercenter/wxminiapp/sign/login
+      bindUserUrl: https://www.wgink.ink/usercenter/wxminiapp/sign/login
       grantType: authorization_code
-      appKey: wx57052635beaab3fa
+      appKey: wxb9c87f3dcf05852f
       appSecret: 4cc3e86da0f1b2855dc99c83f9c451b9
 
 sms:

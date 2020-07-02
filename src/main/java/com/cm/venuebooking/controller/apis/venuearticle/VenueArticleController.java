@@ -3,6 +3,7 @@ package com.cm.venuebooking.controller.apis.venuearticle;
 import com.cm.common.annotation.CheckRequestBodyAnnotation;
 import com.cm.common.constants.ISystemConstant;
 import com.cm.common.exception.SearchException;
+import com.cm.common.pojo.dtos.ZTreeDTO;
 import com.cm.common.result.ErrorResult;
 import com.cm.common.result.SuccessResult;
 import com.cm.venuebooking.controller.BaseController;
@@ -12,6 +13,8 @@ import com.cm.venuebooking.service.venuearticle.IVenueArticleService;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * @author xwangs
@@ -54,6 +57,13 @@ public class VenueArticleController extends BaseController {
     public SuccessResult update(@PathVariable("articleContentId") String articleContentId,
                                 @RequestBody VenueArticleDTO venueArticleDTO) throws Exception {
         return venueArticleService.update(articleContentId, venueArticleDTO);
+    }
+
+    @ApiOperation(value = "文章类型zTree", notes = "文章类型zTree接口")
+    @ApiResponses({@ApiResponse(code = 400, message = "请求失败", response = ErrorResult.class)})
+    @GetMapping("listvenuearticleztree")
+    public List<ZTreeDTO> listVenueArticleZTree() throws SearchException {
+        return venueArticleService.listVenueArticleZTree();
     }
 
 }

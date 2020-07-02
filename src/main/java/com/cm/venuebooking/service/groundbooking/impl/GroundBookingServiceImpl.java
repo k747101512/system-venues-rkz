@@ -45,6 +45,7 @@ public class GroundBookingServiceImpl extends BaseService implements IGroundBook
     @Override
     public SuccessResultList listPageBookingOrder(ListPage page) {
         Map<String, Object> param = page.getParams();
+        setDataAuthorityInfo(param);
         String userId = securityComponent.getCurrentUser().getUserId();
         param.put("userId",userId);
         //查询当前用户所管理的场馆
@@ -65,11 +66,7 @@ public class GroundBookingServiceImpl extends BaseService implements IGroundBook
     @Override
     public SuccessResult saveBookingInfoForApp(String token, GroundTicketVO groundTicketVO) throws Exception{
         //校验短信验证码
-        String submitCode = groundTicketVO.getSmsCode();
-        String sysCode = VerificationCodeManager.getInstance().getVerificationCode(groundTicketVO.getPhoneNumber());
-        if(sysCode == null || !sysCode.equals(submitCode)){
-            throw new SaveException("验证码错误");
-        }
+        VerificationCodeManager.getInstance().checkVerificationCode(groundTicketVO.getPhoneNumber(), groundTicketVO.getSmsCode());
         AppTokenUser appTokenUser = AppTokenManager.getInstance().getToken(token).getAppTokenUser();
         //预订订单保存
         GroundBookingInfoDTO bookingInfo = new GroundBookingInfoDTO();
@@ -133,10 +130,10 @@ public class GroundBookingServiceImpl extends BaseService implements IGroundBook
             Map<String, Object> param = getHashMap(2);
             for (MyTicketListDTO ticket : list){
                 ticket.setGmtCreate(ticket.getGmtCreate().substring(0,19));
+                param.put("bookingInfoId",ticket.getGroundBookingId());
+                param.put("nowDateTime", DateUtil.getTime());
                 if(!"1".equals(ticket.getOrderType())){
                     //判断订单是否超时
-                    param.put("bookingInfoId",ticket.getGroundBookingId());
-                    param.put("nowDateTime", DateUtil.getTime());
                     List<GroundItemDTO> lastItemList = groundBookingDao.getItemByDateTime(param);
                     if(lastItemList == null || lastItemList.size() == 0){
                         ticket.setOrderType("2");
@@ -144,9 +141,20 @@ public class GroundBookingServiceImpl extends BaseService implements IGroundBook
                 }
                 //预订时段集合
                 List<GroundBookingItemDTO> itemList = groundBookingDao.listMyBookingItem(param);
+                for(GroundBookingItemDTO myItem : itemList ){
+                    if(!"1".equals(myItem.getOrderType())){
+                        String nowDataTime = DateUtil.getTime();
+                        String lastDateTime = myItem.getBookingOrderDate() + " " + myItem.getTimeEnd();
+                        boolean overdue = DateUtil.compareDate(nowDataTime, lastDateTime);
+                        if(overdue){
+                            myItem.setOrderType("2");
+                        }
+                    }
+                    myItem.setTimeStr(myItem.getTimeStr().substring(0,5));
+                    myItem.setTimeEnd(myItem.getTimeEnd().substring(0,5));
+                }
                 ticket.setItemDTOList(itemList);
             }
-
         }
         PageInfo<MyTicketListDTO> pageInfo = new PageInfo<>(list);
         return new SuccessResultList<>(list,pageInfo.getPageNum(),pageInfo.getTotal());

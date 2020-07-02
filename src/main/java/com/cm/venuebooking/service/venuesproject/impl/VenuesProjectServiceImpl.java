@@ -176,9 +176,23 @@ public class VenuesProjectServiceImpl extends BaseService implements IVenuesProj
      */
     @Override
     public List<VenuesProjectDTO> listProjectInfoForApp(String token, String venuesInfoId) {
-        Map<String,Object> param = getHashMap(1);
+        Map<String,Object> param = getHashMap(2);
         param.put("venuesInfoId",venuesInfoId);
         List<VenuesProjectDTO> list = venuesProjectDao.listVenuesProjectExt(param);
         return list;
+    }
+
+    /**
+     * 查询项目详情
+     * @param token
+     * @param venuesProjectId
+     * @return
+     */
+    @Override
+    public SuccessResultData getVenuesProjectDetail(String token, String venuesProjectId) {
+        Map<String,Object> param = getHashMap(2);
+        param.put("venuesProjectId",venuesProjectId);
+        VenuesProjectDTO venuesProjectDTO = venuesProjectDao.getVenuesProjectDetailById(param);
+        return new SuccessResultData(venuesProjectDTO);
     }
 }

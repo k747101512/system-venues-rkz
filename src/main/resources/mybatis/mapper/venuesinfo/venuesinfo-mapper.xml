@@ -259,6 +259,8 @@
             t1.booking_tips,
             t1.venue_service,
             t1.venues_info_id
+        ORDER BY
+            t1.gmt_create ASC
     </select>
     <!--===========================APP分割线===========================================-->
 

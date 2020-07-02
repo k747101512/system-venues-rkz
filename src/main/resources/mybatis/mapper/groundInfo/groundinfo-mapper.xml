@@ -65,9 +65,11 @@
             t1.ground_info_id,
             t1.time_str,
             t1.time_end,
-            t1.price
+            t1.price,
+            t2.ground_name
         FROM
             gen_ground_item t1
+        LEFT JOIN gen_ground_info t2 ON t2.ground_info_id = t1.ground_info_id
         WHERE
             t1.ground_info_id = #{groundInfoId}
     </select>
@@ -161,6 +163,7 @@
             gen_ground_info t1
         WHERE
             t1.is_delete = 0
+        AND t1.open_close_type = 'open'
         AND t1.venues_project_id = #{venuesProjectId}
         ORDER BY t1.gmt_create ASC
     </select>

@@ -47,5 +47,15 @@ public class VenuesProjectAppController extends AbstractController {
         return venuesProjectService.listProjectInfoForApp(null,venuesInfoId);
     }
 
+    @ApiOperation(value = "项目详情信息", notes = "项目详情信息接口")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "venuesProjectId", value = "项目ID", paramType = "path")
+    })
+    @ApiResponses({@ApiResponse(code = 400, message = "请求失败", response = ErrorResult.class)})
+    @GetMapping("getvenuesprojectdetail" + ISystemConstant.APP_RELEASE_SUFFIX + "/{venuesProjectId}")
+    public SuccessResultData getVenuesProjectDetail(@PathVariable("venuesProjectId") String venuesProjectId) throws SearchException {
+        return venuesProjectService.getVenuesProjectDetail(null,venuesProjectId);
+    }
+
 
 }

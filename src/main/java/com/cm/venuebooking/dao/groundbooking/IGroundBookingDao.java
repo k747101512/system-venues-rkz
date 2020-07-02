@@ -57,7 +57,7 @@ public interface IGroundBookingDao {
     VenueProjectDTO getVenueFromProject(String venuesProjectId);
 
     /**
-     *
+     * 保存预订项记录
      * @param param
      */
     void saveBookingItem(Map<String, Object> param);

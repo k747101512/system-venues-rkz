@@ -4,6 +4,7 @@ import com.cm.common.component.SecurityComponent;
 import com.cm.common.exception.RemoveException;
 import com.cm.common.exception.SearchException;
 import com.cm.common.pojo.ListPage;
+import com.cm.common.pojo.dtos.ZTreeDTO;
 import com.cm.common.result.SuccessResult;
 import com.cm.common.result.SuccessResultData;
 import com.cm.common.result.SuccessResultList;
@@ -20,6 +21,7 @@ import com.cm.venuebooking.pojo.vos.venuesinfo.VenuesInfoVO;
 import com.cm.venuebooking.service.BaseService;
 import com.cm.venuebooking.service.venuesinfo.IVenuesInfoService;
 import com.cm.venuebooking.singledata.VenuesListSingleData;
+import com.cm.venuebooking.utils.MapLocationTransformUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +46,8 @@ public class VenuesInfoServiceImpl extends BaseService implements IVenuesInfoSer
     private static final String VENUE_SEARCH_APART = "apart";
     private static final String VENUE_SEARCH_LONGITUDE = "longitude";
     private static final String VENUE_SEARCH_LATITUDE = "latitude";
+    private static final String MAP_TYPE_TX = "TX";
+
     @Autowired
     private IVenuesInfoDao venuesInfoDao;
 
@@ -171,6 +175,14 @@ public class VenuesInfoServiceImpl extends BaseService implements IVenuesInfoSer
     }
 
     @Override
+    public List<VenuesInfoDTO> listPageVenuesInfoResources(ListPage page) {
+        PageHelper.offsetPage(page.getPage(),page.getRows());
+        List<VenuesInfoDTO> venuesInfoDTOs = venuesInfoDao.listVenuesInfo(page.getParams());
+        PageInfo<VenuesInfoDTO> pageInfo = new PageInfo<>(venuesInfoDTOs);
+        return venuesInfoDTOs;
+    }
+
+    @Override
     public SuccessResultData listVenuesByKeyWords(String token, Map<String, Object> params) throws SearchException {
         String projectCategory = StringUtils.isEmpty(params.get("categoryId")) ? "" : params.get("categoryId").toString();
         String venueCity = StringUtils.isEmpty(params.get("cityId")) ? "" : params.get("cityId").toString();
@@ -245,6 +257,14 @@ public class VenuesInfoServiceImpl extends BaseService implements IVenuesInfoSer
         String orderKye = StringUtils.isEmpty(params.get("orderKey"))? "" : params.get("orderKey").toString();
         orderKye = orderKye.trim();
         Point myPoint = setPoint(params);
+        //如果传入的定位来自于腾讯地图，需要转换，否则会导致距离计算出现1公里左右偏差
+        String selfLocation = StringUtils.isEmpty(params.get("selfLocation")) ? "" : params.get("selfLocation").toString();
+        if(MAP_TYPE_TX.equals(selfLocation)
+                && myPoint.getX() == 0
+                && myPoint.getY() == 0){
+            MapLocationTransformUtil util = new MapLocationTransformUtil();
+            myPoint = util.map_tx2bd(myPoint);
+        }
         //按热度查询
         if(VENUE_SEARCH_HOT.equals(orderKye)){
             //TODO 访问量功能实现后添加
@@ -292,7 +312,7 @@ public class VenuesInfoServiceImpl extends BaseService implements IVenuesInfoSer
     private void formatPosition(Point myPoint, List<VenuesInfoDTO> list){
         Point point = new Point();
         for (VenuesInfoDTO item : list){
-            if(myPoint.getX() == 0 || myPoint.getY() == 0){
+            if(myPoint.getX() == 0 && myPoint.getY() == 0){
                 item.setApart("0");
                 continue;
             }
@@ -338,10 +358,51 @@ public class VenuesInfoServiceImpl extends BaseService implements IVenuesInfoSer
         return Point;
     }
 
+    /**
+     * 后台-场馆zTree
+     * 有数据权限校验
+     * @return 返回场馆zTree集合
+     */
     @Override
-    public VenuesInfoDTO getVenuesInfoByIdForApp(String token, String venuesInfoId) throws SearchException {
-        Map<String, Object> params = super.getHashMap(1);
-        params.put("venuesInfoId", venuesInfoId);
-        return venuesInfoDao.getVenuesInfoForApp(params);
+    public List<ZTreeDTO> listVenuesInfoZTree() {
+        Map<String, Object> params = getHashMap(16);
+        setDataAuthorityInfo(params);
+        params.put("creator",securityComponent.getCurrentUser().getUserId());
+        List<VenuesInfoDTO> venuesInfoDTO = venuesInfoDao.listVenuesInfo(params);
+        List<ZTreeDTO> zTreeDTOs = new ArrayList<>();
+        for (VenuesInfoDTO item : venuesInfoDTO){
+            ZTreeDTO zTreeDTO = new ZTreeDTO();
+            zTreeDTO.setName(item.getVenueName());
+            if("arrive".equals(item.getVenueCharge())){
+                zTreeDTO.setName(item.getVenueName() + "(直接到场)");
+            }
+            if("booking".equals(item.getVenueCharge())){
+                zTreeDTO.setName(item.getVenueName() + "(场次预订)");
+            }
+            if("ticket".equals(item.getVenueCharge())){
+                zTreeDTO.setName(item.getVenueName() + "(门票预订)");
+            }
+            zTreeDTO.setpId("0");
+            zTreeDTO.setId(item.getVenuesInfoId());
+            zTreeDTOs.add(zTreeDTO);
+        }
+        return zTreeDTOs;
+    }
+
+    @Override
+    public VenuesInfoDTO getVenuesInfoByIdForApp(String token, Map<String, Object> param) throws SearchException {
+        VenuesInfoDTO venuesInfoDTO = venuesInfoDao.getVenuesInfoForApp(param);
+        String resultLocation = StringUtils.isEmpty(param.get("resultLocation")) ? "" : param.get("resultLocation").toString();
+        //返回的场馆定位需要转换为腾讯地图坐标
+        if(MAP_TYPE_TX.equals(resultLocation)){
+            Point point = new Point();
+            MapLocationTransformUtil util = new MapLocationTransformUtil();
+            point.setX(Double.parseDouble(venuesInfoDTO.getLatitude()));
+            point.setY(Double.parseDouble(venuesInfoDTO.getLongitude()));
+            point = util.map_bd2tx(point);
+            venuesInfoDTO.setLatitude(point.getX() + "");
+            venuesInfoDTO.setLongitude(point.getY() + "");
+        }
+        return venuesInfoDTO;
     }
 }

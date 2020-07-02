@@ -132,4 +132,12 @@ public interface IVenuesProjectService {
      * @return
      */
     List<VenuesProjectDTO> listProjectInfoForApp(String token, String venuesInfoId);
+
+    /**
+     * 查询项目详情
+     * @param token
+     * @param venuesProjectId
+     * @return
+     */
+    SuccessResultData getVenuesProjectDetail(String token, String venuesProjectId);
 }

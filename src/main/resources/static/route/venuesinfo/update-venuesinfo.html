@@ -177,7 +177,7 @@
                     </div>
                 </div>
                 <div class="layui-form-item layui-form-text">
-                    <label class="layui-form-label">预订提示</label>
+                    <label class="layui-form-label">温馨提示</label>
                     <div class="layui-input-block">
                         <textarea id="bookingTips" name="bookingTips" placeholder="请输入预订提示" class="layui-textarea"></textarea>
                     </div>
@@ -239,7 +239,6 @@
                 for(var i in data) {
                     dataFormData[i] = data[i];
                 }
-                debugger;
                 form.val('dataForm', dataFormData);
                 form.render(null, 'dataForm');
                 initCitySelect(data['venueCity']);
@@ -263,11 +262,11 @@
             layer.open({
                 type: 2,
                 title: '选择定位',
-                closeBtn: 0,
+                closeBtn: 1,
                 area: ['80%', '80%'],
                 shadeClose: false,
                 anim: 2,
-                content: top.restAjax.path('route/baidumap/baidu-map.html', []),
+                content: top.restAjax.path('route/publishresource/baidumap/baidu-map.html', []),
                 end: function() {
                     $('#longitude').val(BMapPosition.longitude);
                     $('#latitude').val(BMapPosition.latitude);
