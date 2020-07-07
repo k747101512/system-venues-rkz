@@ -175,11 +175,11 @@ public class VenuesInfoServiceImpl extends BaseService implements IVenuesInfoSer
     }
 
     @Override
-    public List<VenuesInfoDTO> listPageVenuesInfoResources(ListPage page) {
-        PageHelper.offsetPage(page.getPage(),page.getRows());
+    public SuccessResultList<List<VenuesInfoDTO>> listPageVenuesInfoResources(ListPage page) {
+        PageHelper.startPage(page.getPage(),page.getRows());
         List<VenuesInfoDTO> venuesInfoDTOs = venuesInfoDao.listVenuesInfo(page.getParams());
         PageInfo<VenuesInfoDTO> pageInfo = new PageInfo<>(venuesInfoDTOs);
-        return venuesInfoDTOs;
+        return new SuccessResultList<>(venuesInfoDTOs,pageInfo.getPageNum(),pageInfo.getTotal());
     }
 
     @Override

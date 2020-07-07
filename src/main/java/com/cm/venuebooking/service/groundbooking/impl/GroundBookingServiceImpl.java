@@ -66,7 +66,7 @@ public class GroundBookingServiceImpl extends BaseService implements IGroundBook
     @Override
     public SuccessResult saveBookingInfoForApp(String token, GroundTicketVO groundTicketVO) throws Exception{
         //校验短信验证码
-        VerificationCodeManager.getInstance().checkVerificationCode(groundTicketVO.getPhoneNumber(), groundTicketVO.getSmsCode());
+        //VerificationCodeManager.getInstance().checkVerificationCode(groundTicketVO.getPhoneNumber(), groundTicketVO.getSmsCode());
         AppTokenUser appTokenUser = AppTokenManager.getInstance().getToken(token).getAppTokenUser();
         //预订订单保存
         GroundBookingInfoDTO bookingInfo = new GroundBookingInfoDTO();
@@ -107,10 +107,10 @@ public class GroundBookingServiceImpl extends BaseService implements IGroundBook
                 bookingItem.setOrderType("0");
                 Map<String, Object> itemParam = HashMapUtil.beanToMap(bookingItem);
                 setSaveInfo(token,itemParam);
-                groundBookingDao.saveBookingItem(itemParam);
+                //groundBookingDao.saveBookingItem(itemParam);
             }
         }
-        groundBookingDao.saveBookingInfo(param);
+        //groundBookingDao.saveBookingInfo(param);
         return new SuccessResult();
     }
 

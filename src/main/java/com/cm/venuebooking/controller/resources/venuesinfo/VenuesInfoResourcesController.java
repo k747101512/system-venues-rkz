@@ -38,7 +38,7 @@ public class VenuesInfoResourcesController extends BaseController {
     })
     @ApiResponses({@ApiResponse(code = 400, message = "请求失败", response = ErrorResult.class)})
     @GetMapping("listpagevenuesinfo")
-    public List<VenuesInfoDTO> listPageVenuesInfo(ListPage page) throws SearchException {
+    public SuccessResultList<List<VenuesInfoDTO>> listPageVenuesInfo(ListPage page) throws SearchException {
         Map<String, Object> params = requestParams();
         page.setParams(params);
         return venuesInfoService.listPageVenuesInfoResources(page);

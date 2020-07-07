@@ -165,5 +165,5 @@ public interface IVenuesInfoService {
      * @param page
      * @return
      */
-    List<VenuesInfoDTO> listPageVenuesInfoResources(ListPage page);
+    SuccessResultList<List<VenuesInfoDTO>> listPageVenuesInfoResources(ListPage page);
 }
