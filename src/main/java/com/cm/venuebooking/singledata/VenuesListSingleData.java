@@ -5,6 +5,7 @@ import com.cm.venuebooking.pojo.dtos.venuesinfo.VenuesInfoDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author xwangs
@@ -23,9 +24,9 @@ public class VenuesListSingleData {
         return instance;
     }
 
-    public List<VenuesInfoDTO> getVenuesList(IVenuesInfoDao venuesInfoDao){
+    public List<VenuesInfoDTO> getVenuesList(IVenuesInfoDao venuesInfoDao, Map<String, Object> params){
         if(venuesList == null || venuesList.size() ==0){
-            venuesList = venuesInfoDao.listVenuesByKeyWords(null);
+            venuesList = venuesInfoDao.listVenuesByKeyWords(params);
         }
         return venuesList;
     }

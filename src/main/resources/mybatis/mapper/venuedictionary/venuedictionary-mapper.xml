@@ -110,6 +110,8 @@
         AND
             t1.dictionary_parent_id = #{dictionaryParentId}
         </if>
+        ORDER BY
+            t1.dictionary_sort ASC
     </select>
 
 </mapper>

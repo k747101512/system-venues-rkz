@@ -32,10 +32,10 @@ public class GroundBookingInfoDTO {
     private String phoneNumber;
     @ApiModelProperty(name = "orderType", value = "订单状态0正常1取消2过期")
     private String orderType;
-    /*@ApiModelProperty(name = "arriveType", value = "到场情况-未到0已到1协商2拉黑")
-    private String arriveType;*/
-    /*@ApiModelProperty(name = "reason", value = "已协商或拉黑理由")
-    private String reason;*/
+    @ApiModelProperty(name = "gmtCreate", value = "下单时间")
+    private String gmtCreate;
+    @ApiModelProperty(name = "venuePanorama", value = "场馆图片")
+    private String venuePanorama;
 
     public String getGroundBookingId() {
         return groundBookingId == null ? "" : groundBookingId;
@@ -125,6 +125,22 @@ public class GroundBookingInfoDTO {
         this.orderType = orderType;
     }
 
+    public String getGmtCreate() {
+        return gmtCreate == null ? "" : gmtCreate;
+    }
+
+    public void setGmtCreate(String gmtCreate) {
+        this.gmtCreate = gmtCreate;
+    }
+
+    public String getVenuePanorama() {
+        return venuePanorama == null ? "" : venuePanorama;
+    }
+
+    public void setVenuePanorama(String venuePanorama) {
+        this.venuePanorama = venuePanorama;
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("{");
@@ -150,6 +166,10 @@ public class GroundBookingInfoDTO {
                 .append(phoneNumber).append('\"');
         sb.append(",\"orderType\":\"")
                 .append(orderType).append('\"');
+        sb.append(",\"gmtCreate\":\"")
+                .append(gmtCreate).append('\"');
+        sb.append(",\"venuePanorama\":\"")
+                .append(venuePanorama).append('\"');
         sb.append('}');
         return sb.toString();
     }

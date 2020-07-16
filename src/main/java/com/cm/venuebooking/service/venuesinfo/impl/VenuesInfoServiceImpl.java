@@ -272,7 +272,7 @@ public class VenuesInfoServiceImpl extends BaseService implements IVenuesInfoSer
         //根据定位排序
         if(VENUE_SEARCH_APART.equals(orderKye)){
             VenuesListSingleData venuesListSingleData = VenuesListSingleData.getInstance();
-            venuesInfoDTOs = venuesListSingleData.getVenuesList(venuesInfoDao);
+            venuesInfoDTOs = venuesListSingleData.getVenuesList(venuesInfoDao,params);
             formatPosition(myPoint,venuesInfoDTOs);
             pointListCompareToAse(venuesInfoDTOs);
             List<VenuesInfoDTO> subList = venuesInfoDTOs.subList(0,venuesInfoDTOs.size() > 10 ? 10 : venuesInfoDTOs.size());
@@ -288,21 +288,35 @@ public class VenuesInfoServiceImpl extends BaseService implements IVenuesInfoSer
     @Override
     public SuccessResultData<List<VenuesInfoDTO>> listRangeVenuesInfo(Map<String, Object> params) {
         VenuesListSingleData venuesListSingleData = VenuesListSingleData.getInstance();
-        List<VenuesInfoDTO> venuesInfoDTOs = venuesListSingleData.getVenuesList(venuesInfoDao);
-        Point myPoint = setPoint(params);
-        formatPosition(myPoint, venuesInfoDTOs);
-        List<VenuesInfoDTO> screeningResult = new ArrayList<>(16);
-        double range = Double.parseDouble(params.get("range").toString());
-        double apart;
-        if(venuesInfoDTOs != null && venuesInfoDTOs.size() > 0){
-            for (VenuesInfoDTO item : venuesInfoDTOs){
-                apart = Double.parseDouble(item.getApart());
-                if(apart <= range){
+        List<VenuesInfoDTO> venuesInfoDTOs = venuesListSingleData.getVenuesList(venuesInfoDao,params);
+        String venueType = StringUtils.isEmpty(params.get("venueType")) ? "" : params.get("venueType").toString();
+        List<VenuesInfoDTO> screeningResult = new ArrayList<>();
+        if(!"".equals(venueType)){
+            for (VenuesInfoDTO item : venuesInfoDTOs) {
+                if (venueType.equals(item.getVenueType())) {
                     screeningResult.add(item);
                 }
             }
+        } else {
+            screeningResult.addAll(venuesInfoDTOs);
         }
-        return new SuccessResultData(screeningResult);
+        if(StringUtils.isEmpty(params.get("range"))){
+            return new SuccessResultData(screeningResult);
+        }
+        double range = Double.parseDouble(params.get("range").toString());
+        double apart;
+        Point myPoint = setPoint(params);
+        formatPosition(myPoint, screeningResult);
+        List<VenuesInfoDTO> rangeList = new ArrayList<>();
+        if(screeningResult != null && screeningResult.size() > 0){
+            for (VenuesInfoDTO item : screeningResult){
+                apart = Double.parseDouble(item.getApart());
+                if(apart <= range){
+                    rangeList.add(item);
+                }
+            }
+        }
+        return new SuccessResultData(rangeList);
     }
 
     /**
@@ -392,6 +406,13 @@ public class VenuesInfoServiceImpl extends BaseService implements IVenuesInfoSer
     @Override
     public VenuesInfoDTO getVenuesInfoByIdForApp(String token, Map<String, Object> param) throws SearchException {
         VenuesInfoDTO venuesInfoDTO = venuesInfoDao.getVenuesInfoForApp(param);
+        //查询是否有项目信息
+        venuesInfoDTO.setHasProject("0");
+        param.put("venuesInfoId",venuesInfoDTO.getVenuesInfoId());
+        List<VenuesProjectDTO> projectList = venuesProjectDao.listVenuesProject(param);
+        if(projectList != null && projectList.size() > 0){
+            venuesInfoDTO.setHasProject("1");
+        }
         String resultLocation = StringUtils.isEmpty(param.get("resultLocation")) ? "" : param.get("resultLocation").toString();
         //返回的场馆定位需要转换为腾讯地图坐标
         if(MAP_TYPE_TX.equals(resultLocation)){

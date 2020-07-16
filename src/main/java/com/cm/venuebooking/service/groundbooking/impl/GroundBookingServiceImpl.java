@@ -1,6 +1,5 @@
 package com.cm.venuebooking.service.groundbooking.impl;
 
-import com.cm.common.exception.SaveException;
 import com.cm.common.pojo.ListPage;
 import com.cm.common.result.SuccessResult;
 import com.cm.common.result.SuccessResultData;
@@ -66,7 +65,7 @@ public class GroundBookingServiceImpl extends BaseService implements IGroundBook
     @Override
     public SuccessResult saveBookingInfoForApp(String token, GroundTicketVO groundTicketVO) throws Exception{
         //校验短信验证码
-        //VerificationCodeManager.getInstance().checkVerificationCode(groundTicketVO.getPhoneNumber(), groundTicketVO.getSmsCode());
+        VerificationCodeManager.getInstance().checkVerificationCode(groundTicketVO.getPhoneNumber(), groundTicketVO.getSmsCode());
         AppTokenUser appTokenUser = AppTokenManager.getInstance().getToken(token).getAppTokenUser();
         //预订订单保存
         GroundBookingInfoDTO bookingInfo = new GroundBookingInfoDTO();
@@ -107,10 +106,10 @@ public class GroundBookingServiceImpl extends BaseService implements IGroundBook
                 bookingItem.setOrderType("0");
                 Map<String, Object> itemParam = HashMapUtil.beanToMap(bookingItem);
                 setSaveInfo(token,itemParam);
-                //groundBookingDao.saveBookingItem(itemParam);
+                groundBookingDao.saveBookingItem(itemParam);
             }
         }
-        //groundBookingDao.saveBookingInfo(param);
+        groundBookingDao.saveBookingInfo(param);
         return new SuccessResult();
     }
 
@@ -171,6 +170,8 @@ public class GroundBookingServiceImpl extends BaseService implements IGroundBook
         myTicketDetailDTO.setSerial(bookingInfoDTO.getSerial());
         myTicketDetailDTO.setVenuesName(bookingInfoDTO.getVenuesName());
         myTicketDetailDTO.setProjectName(bookingInfoDTO.getProjectName());
+        myTicketDetailDTO.setGmtCreate(bookingInfoDTO.getGmtCreate());
+        myTicketDetailDTO.setVenuePanorama(bookingInfoDTO.getVenuePanorama());
         //查询预订项列表
         params.put("bookingInfoId", bookingInfoDTO.getGroundBookingId());
         List<GroundBookingItemDTO> itemList = groundBookingDao.listMyBookingItem(params);

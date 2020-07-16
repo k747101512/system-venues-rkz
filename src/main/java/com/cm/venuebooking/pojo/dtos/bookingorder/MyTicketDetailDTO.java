@@ -21,6 +21,10 @@ public class MyTicketDetailDTO {
     private String venuesName;
     @ApiModelProperty(name = "projectName", value = "项目名")
     private String projectName;
+    @ApiModelProperty(name = "venuePanorama", value = "场馆图")
+    private String venuePanorama;
+    @ApiModelProperty(name = "gmtCreate", value = "下单时间")
+    private String gmtCreate;
     @ApiModelProperty(name = "itemDTOList", value = "预订项集合")
     private List<GroundBookingItemDTO> itemDTOList;
 
@@ -56,6 +60,22 @@ public class MyTicketDetailDTO {
         this.projectName = projectName;
     }
 
+    public String getVenuePanorama() {
+        return venuePanorama == null ? "" : venuePanorama;
+    }
+
+    public void setVenuePanorama(String venuePanorama) {
+        this.venuePanorama = venuePanorama;
+    }
+
+    public String getGmtCreate() {
+        return gmtCreate == null ? "" : gmtCreate;
+    }
+
+    public void setGmtCreate(String gmtCreate) {
+        this.gmtCreate = gmtCreate;
+    }
+
     public List<GroundBookingItemDTO> getItemDTOList() {
         if (itemDTOList == null) {
             return new ArrayList<>();
@@ -78,6 +98,10 @@ public class MyTicketDetailDTO {
                 .append(venuesName).append('\"');
         sb.append(",\"projectName\":\"")
                 .append(projectName).append('\"');
+        sb.append(",\"venuePanorama\":\"")
+                .append(venuePanorama).append('\"');
+        sb.append(",\"gmtCreate\":\"")
+                .append(gmtCreate).append('\"');
         sb.append(",\"itemDTOList\":")
                 .append(itemDTOList);
         sb.append('}');

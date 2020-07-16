@@ -1,6 +1,6 @@
 server:
   port: 8082
-  url: http://192.168.0.109:8082/venuebooking
+  url: http://192.168.1.3:8082/venuebooking
   title: 西藏场馆管理系统
   servlet:
     context-path: /venuebooking

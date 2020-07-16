@@ -199,6 +199,8 @@
             t1.venue_charge,
             t1.venue_route,
             t1.venue_area,
+            t1.longitude,
+            t1.latitude,
             t1.venue_telephone,
             t1.venue_name,
             t1.venue_position,
@@ -274,7 +276,8 @@
             t1.latitude,
             t1.venue_panorama,
             t1.venue_telephone,
-            t1.business_hours
+            t1.business_hours,
+            t1.venue_type
         FROM
             gen_venues_info t1
         WHERE

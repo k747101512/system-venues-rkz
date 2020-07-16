@@ -56,6 +56,8 @@ public class VenuesInfoDTO {
     private String apart;
     @ApiModelProperty(name = "viewCount", value = "浏览量")
     private String viewCount;
+    @ApiModelProperty(name = "hasProject", value = "是否有预订项目")
+    private String hasProject;
 
     public String getVenuesInfoId() {
         return venuesInfoId == null ? "" : venuesInfoId;
@@ -222,5 +224,64 @@ public class VenuesInfoDTO {
 
     public void setLatitude(String latitude) {
         this.latitude = latitude;
+    }
+
+    public String getHasProject() {
+        return hasProject == null ? "" : hasProject;
+    }
+
+    public void setHasProject(String hasProject) {
+        this.hasProject = hasProject;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("{");
+        sb.append("\"venuesInfoId\":\"")
+                .append(venuesInfoId).append('\"');
+        sb.append(",\"venueCity\":\"")
+                .append(venueCity).append('\"');
+        sb.append(",\"venueOtherService\":\"")
+                .append(venueOtherService).append('\"');
+        sb.append(",\"venueCharge\":\"")
+                .append(venueCharge).append('\"');
+        sb.append(",\"venueRoute\":\"")
+                .append(venueRoute).append('\"');
+        sb.append(",\"venueArea\":\"")
+                .append(venueArea).append('\"');
+        sb.append(",\"longitude\":\"")
+                .append(longitude).append('\"');
+        sb.append(",\"latitude\":\"")
+                .append(latitude).append('\"');
+        sb.append(",\"venueTelephone\":\"")
+                .append(venueTelephone).append('\"');
+        sb.append(",\"venueName\":\"")
+                .append(venueName).append('\"');
+        sb.append(",\"venuePosition\":\"")
+                .append(venuePosition).append('\"');
+        sb.append(",\"venueDescription\":\"")
+                .append(venueDescription).append('\"');
+        sb.append(",\"venueOpenType\":")
+                .append(venueOpenType);
+        sb.append(",\"businessHours\":\"")
+                .append(businessHours).append('\"');
+        sb.append(",\"venuePlan\":\"")
+                .append(venuePlan).append('\"');
+        sb.append(",\"venuePanorama\":\"")
+                .append(venuePanorama).append('\"');
+        sb.append(",\"bookingTips\":\"")
+                .append(bookingTips).append('\"');
+        sb.append(",\"venueService\":\"")
+                .append(venueService).append('\"');
+        sb.append(",\"venueType\":\"")
+                .append(venueType).append('\"');
+        sb.append(",\"apart\":\"")
+                .append(apart).append('\"');
+        sb.append(",\"viewCount\":\"")
+                .append(viewCount).append('\"');
+        sb.append(",\"hasProject\":\"")
+                .append(hasProject).append('\"');
+        sb.append('}');
+        return sb.toString();
     }
 }
